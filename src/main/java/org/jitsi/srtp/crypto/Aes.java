@@ -20,8 +20,9 @@ import java.security.*;
 import java.util.*;
 
 import javax.crypto.spec.*;
-import org.bouncycastle.jce.provider.*;
-import org.jitsi.utils.logging2.*;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.crypto.*;
 
@@ -36,7 +37,7 @@ public class Aes
      * The {@link Logger} used by the {@link Aes} class to print out debug
      * information.
      */
-    private static final Logger logger = new LoggerImpl(Aes.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(Aes.class);
 
     /**
      * The block size in bytes of the AES algorithm (implemented by the
@@ -84,9 +85,9 @@ public class Aes
      */
     private static final Class<?>[] FACTORY_CLASSES
         = {
-            OpenSSLCipherFactory.class,
             SunJCECipherFactory.class,
             BouncyCastleCipherFactory.class,
+            BouncyCastleFIPSCipherFactory.class,
             SunPKCS11CipherFactory.class,
         };
 
@@ -145,7 +146,7 @@ public class Aes
         factoryClass = null;
     }
 
-    private static abstract class BenchmarkOperation
+    private abstract static class BenchmarkOperation
     {
         abstract void run(Cipher cipher) throws Exception;
 
@@ -355,21 +356,16 @@ public class Aes
                     throw (ThreadDeath) t;
                 else
                 {
-                    logger.warn("Chosen factory class \"" + FACTORY_CLASS_NAME +
-                        "\" not working for " + transformation + ": " +
-                        t.getMessage());
+                    logger.warn("Chosen factory class \"{}\" not working for {}: {}", FACTORY_CLASS_NAME,
+                            transformation, t.getMessage());
                 }
             }
         }
 
         if (log.length() != 0)
         {
-            logger.info(() ->
-                    "AES benchmark"
-                        + " (of execution times expressed in nanoseconds): "
-                        + log
-                        + " for " + transformation
-            );
+            logger.info("AES benchmark" + " (of execution times expressed in nanoseconds): {} for {}", log,
+                    transformation);
         }
 
         return minFactory;
@@ -410,10 +406,8 @@ public class Aes
                     }
                     else
                     {
-                        logger.warn(() ->
-                                "Failed to initialize an optimized AES"
-                                    + " implementation: "
-                                    + t.getLocalizedMessage());
+                        logger.warn("Failed to initialize an optimized AES implementation: {}",
+                                t.getLocalizedMessage());
                     }
                 }
                 finally
@@ -430,9 +424,8 @@ public class Aes
                     {
                         // Simplify the name of the CipherFactory class to
                         // be employed for the purposes of brevity and ease.
-                        logger.info("Will employ AES implemented by "
-                                    + getSimpleClassName(factory) +
-                                    " for " + transformation + ".");
+                        logger.info("Will employ AES implemented by {} for {}.", getSimpleClassName(factory),
+                                transformation);
                     }
                 }
             }
@@ -550,10 +543,8 @@ public class Aes
                         }
                         else
                         {
-                            logger.warn(() ->
-                                    "Failed to employ class " + factoryClassName
-                                        + " as an AES implementation: "
-                                        + t.getLocalizedMessage());
+                            logger.warn("Failed to employ class {} as an AES implementation: {}", factoryClassName,
+                                    t.getLocalizedMessage());
                         }
                     }
                 }
@@ -685,9 +676,7 @@ public class Aes
         // Benchmark the StreamCiphers provided by the available
         // StreamCipherFactories in order to select the fastest-performing
         // CipherFactory.
-        CipherFactory minFactory = benchmark(factories, keySize, transformation);
-
-        return minFactory;
+        return benchmark(factories, keySize, transformation);
     }
 
     /**
@@ -741,76 +730,6 @@ public class Aes
     }
 
     /**
-     * Implements {@link CipherFactory} using Jitsi SRTP's OpenSSL.
-     */
-    public static class OpenSSLCipherFactory
-        extends CipherFactory
-    {
-        public OpenSSLCipherFactory()
-        {
-            super(new JitsiOpenSslProvider());
-        }
-
-        private boolean trySuperApi = true;
-        private Constructor<Cipher> cipherConstructor;
-        private Field cipherProviderField;
-
-        private synchronized void getMethods()
-            throws NoSuchAlgorithmException
-        {
-            if (cipherConstructor == null || cipherProviderField == null)
-            {
-                try
-                {
-                    cipherConstructor = Cipher.class
-                        .getDeclaredConstructor(CipherSpi.class, String.class);
-                    cipherConstructor.setAccessible(true);
-                    cipherProviderField =
-                        Cipher.class.getDeclaredField("provider");
-                    cipherProviderField.setAccessible(true);
-                }
-                catch (NoSuchMethodException | NoSuchFieldException e)
-                {
-                    cipherConstructor = null;
-                    cipherProviderField = null;
-                    throw new NoSuchAlgorithmException(
-                        "Cannot instantiate OpenSSL Cipher");
-                }
-            }
-        }
-
-        @Override
-        public Cipher createCipher(String transformation) throws Exception
-        {
-            if (trySuperApi)
-            {
-                try
-                {
-                    return super.createCipher(transformation);
-                }
-                catch (SecurityException e)
-                {
-                    trySuperApi = false;
-                }
-            }
-            /* Work around the fact that we can't install our own security
-             * providers on Oracle JVMs.
-             *
-             * Note this will trigger a illegal reflective access warning on JVM 11+.
-             */
-            getMethods();
-
-            Provider.Service s = provider.getService("Cipher", transformation);
-            CipherSpi spi = (CipherSpi)s.newInstance(null);
-
-            Cipher cipher = cipherConstructor.newInstance(spi, transformation);
-            cipherProviderField.set(cipher, provider);
-
-            return cipher;
-        }
-    }
-
-    /**
      * Implements {@link CipherFactory} using BouncyCastle.
      *
      * @author Lyubomir Marinov
@@ -820,9 +739,18 @@ public class Aes
     {
         public BouncyCastleCipherFactory()
         {
-            super(new BouncyCastleProvider());
+            super("BC");
         }
     }
+    
+    public static class BouncyCastleFIPSCipherFactory
+    extends CipherFactory
+{
+    public BouncyCastleFIPSCipherFactory()
+    {
+        super("BCFIPS");
+    }
+}
 
     /**
      * Implements {@link CipherFactory} using Sun JCE.

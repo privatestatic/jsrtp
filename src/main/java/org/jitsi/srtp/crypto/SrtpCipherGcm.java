@@ -25,7 +25,7 @@ import java.security.*;
 public class SrtpCipherGcm
     extends SrtpCipher
 {
-    private final static int AUTH_TAG_BITS = 128;
+    private static final int AUTH_TAG_BITS = 128;
 
     private SecretKeySpec key = null;
 

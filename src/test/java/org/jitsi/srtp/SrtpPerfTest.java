@@ -21,9 +21,7 @@ import gnu.getopt.*;
 import java.security.*;
 import org.jitsi.srtp.crypto.*;
 import org.jitsi.utils.*;
-import org.jitsi.utils.logging2.*;
 import org.junit.jupiter.api.*;
-
 import java.time.*;
 import java.util.*;
 
@@ -98,11 +96,10 @@ public class SrtpPerfTest {
     private void createContext(SrtpPolicy policy, boolean sender)
         throws GeneralSecurityException
     {
-        Logger logger = new LoggerImpl(getClass().getName());
         factory = new SrtpContextFactory(sender,
             Arrays.copyOf(test_key, policy.getEncKeyLength()),
             Arrays.copyOf(test_key_salt, policy.getSaltKeyLength()),
-            policy, policy, logger);
+            policy, policy);
         context = factory.deriveContext(0xcafebabe, 0);
     }
 
@@ -215,14 +212,14 @@ public class SrtpPerfTest {
     private static final int DEFAULT_NUM_WARMUPS = 20000;
 
     @Test
-    public void srtpPerf()
+    void srtpPerf()
         throws GeneralSecurityException
     {
         doCtrPerfTest(DEFAULT_NUM_TESTS, DEFAULT_PAYLOAD_SIZE, DEFAULT_NUM_WARMUPS);
     }
 
     @Test
-    public void srtpPerfGcm()
+    void srtpPerfGcm()
         throws GeneralSecurityException
     {
         doGcmPerfTest(DEFAULT_NUM_TESTS, DEFAULT_PAYLOAD_SIZE, DEFAULT_NUM_WARMUPS);
@@ -242,7 +239,6 @@ public class SrtpPerfTest {
         int numTests = DEFAULT_NUM_TESTS;
         int payloadSize = DEFAULT_PAYLOAD_SIZE;
         int numWarmups = DEFAULT_NUM_WARMUPS;
-        String factoryClassName = null;
 
         Getopt g = new Getopt(progName, args, "f:p:w:");
 

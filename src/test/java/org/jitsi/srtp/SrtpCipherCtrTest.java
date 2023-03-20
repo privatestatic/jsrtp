@@ -23,7 +23,7 @@ import javax.crypto.*;
 import org.jitsi.srtp.crypto.*;
 import org.junit.jupiter.api.*;
 
-public class SrtpCipherCtrTest
+class SrtpCipherCtrTest
 {
     // RFC 3711 AES CTR Tests vectors
     private static final byte[] TV_Key =
@@ -46,41 +46,9 @@ public class SrtpCipherCtrTest
             + "6A2CC3787889374FBEB4C81B17BA6C44");
 
     @Test
-    public void testJavaCtrAes() throws Exception
+    void testJavaCtrAes() throws Exception
     {
         SrtpCipherCtr cipher = new SrtpCipherCtr(Cipher.getInstance("AES/CTR/NoPadding"));
-        cipher.init(TV_Key, null);
-        byte[] data = new byte[TV_Cipher_AES_1.length];
-
-        Arrays.fill(data, (byte) 0);
-        byte[] iv = Arrays.copyOf(TV_IV_1, TV_IV_1.length);
-        cipher.setIV(iv, Cipher.ENCRYPT_MODE);
-        cipher.process(data, 0, data.length);
-        assertArrayEquals(TV_Cipher_AES_1, data);
-
-        Arrays.fill(data, (byte) 0);
-        iv = Arrays.copyOf(TV_IV_2, TV_IV_2.length);
-        cipher.setIV(iv, Cipher.ENCRYPT_MODE);
-        cipher.process(data, 0, data.length);
-        assertArrayEquals(TV_Cipher_AES_2, data);
-    }
-
-    @Test
-    public void testOpenSslCtrAes() throws Exception
-    {
-        boolean haveOpenSsl = JitsiOpenSslProvider.isLoaded();
-
-        if (System.getProperty("os.name").toLowerCase().contains("linux") && !Boolean.getBoolean("skipNativeTests"))
-        {
-            assertTrue(haveOpenSsl, "should always have OpenSSL on Linux");
-        }
-
-        if (!haveOpenSsl)
-        {
-            return;
-        }
-
-        SrtpCipherCtr cipher = new SrtpCipherCtr(new Aes.OpenSSLCipherFactory().createCipher("AES/CTR/NoPadding"));
         cipher.init(TV_Key, null);
         byte[] data = new byte[TV_Cipher_AES_1.length];
 

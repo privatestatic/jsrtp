@@ -16,9 +16,11 @@
 package org.jitsi.srtp;
 
 import java.security.*;
-import org.jitsi.utils.logging2.*;
 
 import java.util.*;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link SrtpContextFactory} creates the initial crypto contexts for RTP
@@ -58,7 +60,7 @@ public class SrtpContextFactory
     /**
      * Logger for SrtpContextFactory and derived objects.
      */
-    protected final Logger logger;
+    private static final Logger logger = LoggerFactory.getLogger(SrtpContextFactory.class);
 
     /**
      * Construct a SrtpTransformEngine based on given master encryption key,
@@ -77,10 +79,8 @@ public class SrtpContextFactory
             byte[] masterKey,
             byte[] masterSalt,
             SrtpPolicy srtpPolicy,
-            SrtpPolicy srtcpPolicy,
-            Logger parentLogger)
+            SrtpPolicy srtcpPolicy)
     {
-        logger = parentLogger.createChildLogger(getClass().getName());
         int encKeyLength = srtpPolicy.getEncKeyLength();
         if (encKeyLength != srtcpPolicy.getEncKeyLength())
         {

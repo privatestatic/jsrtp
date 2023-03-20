@@ -24,7 +24,7 @@ import java.util.*;
 import static jakarta.xml.bind.DatatypeConverter.parseHexBinary;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class SrtpCipherGcmTest
+class SrtpCipherGcmTest
 {
     // RFC 7714 AES GCM Test vectors
     private static final byte[] TV_Packet =
@@ -142,7 +142,7 @@ public class SrtpCipherGcmTest
     }
 
     @Test
-    public void testSrtpCipherJava()
+    void testSrtpCipherJava()
         throws Exception
     {
         SrtpCipherGcm cipher = new SrtpCipherGcm(Cipher.getInstance("AES/GCM/NoPadding"));
@@ -151,58 +151,12 @@ public class SrtpCipherGcmTest
     }
 
     @Test
-    public void testSrtpCipherAes()
+    void testSrtpCipherAes()
         throws Exception
     {
         SrtpCipherGcm cipher = new SrtpCipherGcm(Aes.createCipher("AES/GCM/NoPadding"));
 
         testGcmCipher(cipher);
-    }
-
-    @Test
-    public void testSrtpCipherOpenSsl()
-        throws Exception
-    {
-        boolean haveOpenSsl = JitsiOpenSslProvider.isLoaded();
-
-        if (System.getProperty("os.name").toLowerCase().contains("linux") && !Boolean.getBoolean("skipNativeTests"))
-        {
-            assertTrue(haveOpenSsl, "should always have OpenSSL on Linux");
-        }
-
-        if (!haveOpenSsl)
-        {
-            return;
-        }
-
-        SrtpCipherGcm cipher = new SrtpCipherGcm(new Aes.OpenSSLCipherFactory().createCipher("AES/GCM/NoPadding"));
-
-        testGcmCipher(cipher);
-    }
-
-    @Test
-    public void testSrtpCipherOpenSslAuthOnly()
-        throws Exception
-    {
-        boolean haveOpenSsl = JitsiOpenSslProvider.isLoaded();
-
-        if (System.getProperty("os.name").toLowerCase().contains("linux") && !Boolean.getBoolean("skipNativeTests"))
-        {
-            assertTrue(haveOpenSsl, "should always have OpenSSL on Linux");
-        }
-
-        if (!haveOpenSsl)
-        {
-            return;
-        }
-
-        SrtpCipherGcm cipher = new SrtpCipherGcm(new Aes.OpenSSLCipherFactory().createCipher("AES/GCM-AuthOnly/NoPadding"));
-
-        cipher.init(TV_Key_128, null);
-        testDecryptGcmCipherKey(cipher, TV_Cipher_AES_GCM_128, true);
-
-        cipher.init(TV_Key_256, null);
-        testDecryptGcmCipherKey(cipher, TV_Cipher_AES_GCM_256, true);
     }
 
     /* TODO add tests for other implementations as they're written */

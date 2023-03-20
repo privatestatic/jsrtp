@@ -5,9 +5,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.jitsi</groupId>
-    <artifactId>jitsi-srtp</artifactId>
+    <artifactId>jitsi-srtp-basic</artifactId>
     <version>1.1-SNAPSHOT</version>
-    <packaging>bundle</packaging>
 
     <name>Jitsi Secure RTP implementation</name>
     <description>Jitsi SRTP contains classes for encrypting and decrypting SRTP and SRTCP packets</description>
@@ -42,48 +41,31 @@
     </licenses>
 
     <properties>
+		<java.version>11</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <junit.version>5.8.2</junit.version>
-        <bouncycastle.version>1.71</bouncycastle.version>
+        
+        <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
+        <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
+        <maven-failsafe-plugin.version>3.0.0</maven-failsafe-plugin.version>
+        <maven-checkstyle-plugin.version>3.1.2</maven-checkstyle-plugin.version>
+        <com.puppycrawl.tools.checkstyle.version>10.9.2</com.puppycrawl.tools.checkstyle.version>
+        <maven-javadoc-plugin.version>3.5.0</maven-javadoc-plugin.version>
+        <maven-deploy-plugin.version>3.1.0</maven-deploy-plugin.version>
+        <maven-gpg-plugin.version>3.0.1</maven-gpg-plugin.version>
+        <nexus-staging-maven-plugin.version>1.6.13</nexus-staging-maven-plugin.version>
+        <maven-resources-plugin.version>3.3.0</maven-resources-plugin.version>
+        <maven-install-plugin.version>3.1.0</maven-install-plugin.version>
+        <jacoco-maven-plugin.version>0.8.8</jacoco-maven-plugin.version>
+        
+        <java-getopt.version>1.0.13</java-getopt.version>
+        <jakarta.xml.bind-api.version>4.0.0</jakarta.xml.bind-api.version>
+        <slf4j.version>2.0.7</slf4j.version>
+        <junit.version>5.9.2</junit.version>
+        <spotbugs.version>4.7.3</spotbugs.version>
+        <bouncycastle.version>1.72</bouncycastle.version>
     </properties>
 
     <profiles>
-        <profile>
-            <id>osgi-native</id>
-            <activation>
-                <property>
-                    <name>osgi-native</name>
-                    <value>true</value>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.felix</groupId>
-                        <artifactId>maven-bundle-plugin</artifactId>
-                        <version>5.1.6</version>
-                        <extensions>true</extensions>
-                        <configuration>
-                            <instructions>
-                                <Bundle-NativeCode>
-                                    linux-x86-64/libjitsisrtp_1.1.so;
-                                    linux-x86-64/libjitsisrtp_3.so;osname=Linux;processor=x86-64,
-                                    linux-aarch64/libjitsisrtp_1.1.so;
-                                    linux-aarch64/libjitsisrtp_3.so;osname=Linux;processor=AArch64,
-                                    linux-ppc64el/libjitsisrtp_1.1.so;
-                                    linux-ppc64el/libjitsisrtp_3.so;osname=Linux;processor=PowerPC-64-LE,
-                                    darwin-x86-64/libjitsisrtp_1.1.dylib;
-                                    darwin-x86-64/libjitsisrtp_3.dylib;osname=Mac OS X;processor=x86-64,
-                                    darwin-aarch64/libjitsisrtp_1.1.dylib;
-                                    darwin-aarch64/libjitsisrtp_3.dylib;osname=Mac OS X;processor=AArch64,
-                                    *
-                                </Bundle-NativeCode>
-                            </instructions>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
         <profile>
             <id>release</id>
             <activation>
@@ -97,7 +79,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
-                        <version>3.0.1</version>
+                        <version>${maven-gpg-plugin.version}</version>
                         <executions>
                             <execution>
                                 <id>sign-artifacts</id>
@@ -124,7 +106,7 @@
                     <plugin>
                         <groupId>org.jacoco</groupId>
                         <artifactId>jacoco-maven-plugin</artifactId>
-                        <version>0.8.8</version>
+                        <version>${jacoco-maven-plugin.version}</version>
                         <executions>
                             <execution>
                                 <goals>
@@ -147,185 +129,159 @@
     </profiles>
 
     <dependencies>
-        <dependency>
-            <groupId>org.jitsi</groupId>
-            <artifactId>jitsi-utils</artifactId>
-            <version>1.0-114-g43815ed</version>
-        </dependency>
-        <dependency>
-            <groupId>org.bouncycastle</groupId>
-            <artifactId>bcprov-jdk18on</artifactId>
-            <version>${bouncycastle.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jetbrains</groupId>
-            <artifactId>annotations</artifactId>
-            <version>23.0.0</version>
-            <optional>true</optional>
-        </dependency>
+		<dependency>
+			<groupId>com.github.spotbugs</groupId>
+			<artifactId>spotbugs-annotations</artifactId>
+			<version>${spotbugs.version}</version>
+			<optional>true</optional>
+		</dependency>
         <!-- test -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
             <version>${junit.version}</version>
             <scope>test</scope>
-        </dependency>
+		</dependency>
         <dependency>
             <groupId>gnu.getopt</groupId>
             <artifactId>java-getopt</artifactId>
-            <version>1.0.13</version>
+            <version>${java-getopt.version}</version>
             <scope>test</scope>
-        </dependency>
+		</dependency>
         <dependency>
             <groupId>jakarta.xml.bind</groupId>
             <artifactId>jakarta.xml.bind-api</artifactId>
-            <version>4.0.0</version>
+            <version>${jakarta.xml.bind-api.version}</version>
             <scope>test</scope>
-        </dependency>
-    </dependencies>
+		</dependency>
+		<dependency>
+		    <groupId>org.bouncycastle</groupId>
+		    <artifactId>bcprov-jdk18on</artifactId>
+		    <version>${bouncycastle.version}</version>
+		    <scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${slf4j.version}</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-simple</artifactId>
+			<version>${slf4j.version}</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
 
     <build>
         <plugins>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <version>3.3.0</version>
-                <executions>
-                    <execution>
-                        <id>attach-native-sources</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>add-source</goal>
-                        </goals>
-                        <configuration>
-                            <sources>
-                                <source>src/main/native</source>
-                            </sources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
-                <version>3.2.1</version>
+                <version>${maven-source-plugin.version}</version>
                 <executions>
                     <execution>
                         <id>attach-sources</id>
                         <goals>
                             <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
+                <groupId>
+					org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.10.1</version>
+                <version>${maven-compiler-plugin.version}</version>
                 <configuration>
-                    <release>11</release>
-                    <compilerArgs combine.children="append">
-                        <arg>-h</arg>
-                        <arg>${project.build.directory}/native/javah/</arg>
-                    </compilerArgs>
-                </configuration>
-            </plugin>
+                    <release>${java.version}</release>
+				</configuration>
+			</plugin>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.22.2</version>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
+                <groupId>
+					org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
-                <version>2.22.2</version>
-            </plugin>
+                <version>${maven-failsafe-plugin.version}</version>
+			</plugin>
             <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <version>5.1.6</version>
-                <extensions>true</extensions>
-                <configuration>
-                    <instructions>
-                        <_noclassforname>true</_noclassforname>
-                        <_removeheaders>Bnd-*, Tool, Require-Capability
-                        </_removeheaders>
-                        <!-- Prevent importing a specific version. -->
-                        <Import-Package>
-                            *;version=!,
-                            sun.security.pkcs11;resolution:=optional
-                        </Import-Package>
-                    </instructions>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
+                <groupId>
+					org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>3.1.2</version>
+                <version>${maven-checkstyle-plugin.version}</version>
                 <configuration>
                     <configLocation>checkstyle.xml</configLocation>
-                </configuration>
+				</configuration>
                 <dependencies>
                     <dependency>
-                        <groupId>com.puppycrawl.tools</groupId>
+                        <groupId>
+							com.puppycrawl.tools</groupId>
                         <artifactId>checkstyle</artifactId>
-                        <version>10.1</version>
-                    </dependency>
-                </dependencies>
+                        <version>${com.puppycrawl.tools.checkstyle.version}</version>
+					</dependency>
+				</dependencies>
                 <executions>
                     <execution>
                         <goals>
-                            <goal>check</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+                            <goal>
+								check</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
+                <groupId>
+					org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.4.0</version>
+                <version>${maven-javadoc-plugin.version}</version>
                 <configuration>
                     <doclint>-missing</doclint>
-                    <source>11</source>
-                </configuration>
-            </plugin>
+                    <source>${java.version}</source>
+				</configuration>
+			</plugin>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
+                <groupId>
+					org.apache.maven.plugins</groupId>
                 <artifactId>maven-deploy-plugin</artifactId>
-                <version>2.8.2</version>
-            </plugin>
+                <version>${maven-deploy-plugin.version}</version>
+			</plugin>
             <plugin>
                 <groupId>org.sonatype.plugins</groupId>
-                <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.6.13</version>
+                <artifactId>
+					nexus-staging-maven-plugin</artifactId>
+                <version>${nexus-staging-maven-plugin.version}</version>
                 <extensions>true</extensions>
                 <configuration>
-                    <serverId>ossrh</serverId>
+                    <serverId>
+						ossrh</serverId>
                     <nexusUrl>https://oss.sonatype.org/</nexusUrl>
                     <autoReleaseAfterClose>true</autoReleaseAfterClose>
-                </configuration>
-            </plugin>
+				</configuration>
+			</plugin>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
+                <groupId>
+					org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
-                <version>3.2.0</version>
-            </plugin>
+                <version>${maven-resources-plugin.version}</version>
+			</plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-install-plugin</artifactId>
-                <version>3.0.0-M1</version>
-            </plugin>
-        </plugins>
-    </build>
+                <artifactId>
+					maven-install-plugin</artifactId>
+                <version>${maven-install-plugin.version}</version>
+			</plugin>
+		</plugins>
+	</build>
 
     <distributionManagement>
         <snapshotRepository>
             <id>ossrh</id>
             <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        </snapshotRepository>
+		</snapshotRepository>
         <repository>
             <id>ossrh</id>
             <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-        </repository>
-    </distributionManagement>
+		</repository>
+	</distributionManagement>
 </project>

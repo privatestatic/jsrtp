@@ -43,7 +43,8 @@ import javax.crypto.spec.*;
 import org.jitsi.srtp.crypto.*;
 import org.jitsi.srtp.utils.*;
 import org.jitsi.utils.*;
-import org.jitsi.utils.logging2.*;
+
+import org.slf4j.Logger;
 
 /**
  * SrtpCryptoContext class is the core class of SRTP implementation. There can
@@ -153,24 +154,7 @@ public class SrtpCryptoContext
         this.sender = sender;
         this.roc = roc;
 
-        if (!sender && policy.getEncType() == SrtpPolicy.AESGCM_ENCRYPTION &&
-            JitsiOpenSslProvider.isLoaded())
-        {
-            try
-            {
-                cipherAuthOnly = new SrtpCipherGcm(
-                    new Aes.OpenSSLCipherFactory()
-                        .createCipher("AES/GCM-AuthOnly/NoPadding"));
-            }
-            catch (Exception e)
-            {
-                cipherAuthOnly = cipher;
-            }
-        }
-        else
-        {
-            cipherAuthOnly = cipher;
-        }
+        cipherAuthOnly = cipher;
 
         deriveSrtpKeys(masterK, masterS);
     }
@@ -240,12 +224,9 @@ public class SrtpCryptoContext
         {
             if (sender)
             {
-                logger.error(() ->
-                        "Discarding RTP packet with sequence number " + seqNo
-                            + ", SSRC " + (0xFFFFFFFFL & ssrc)
-                            + " because it is outside the replay window! (roc "
-                            + roc + ", s_l " + s_l + ", guessedROC "
-                            + guessedROC + ")");
+                logger.error(
+                        "Discarding RTP packet with sequence number {}, SSRC {} because it is outside the replay" + 
+                        " window! (roc {}, s_l {}, guessedROC {})", seqNo, (0xFFFFFFFFL & ssrc), roc, s_l, guessedROC);
             }
             return SrtpErrorStatus.REPLAY_OLD; // Packet too old.
         }
@@ -253,12 +234,9 @@ public class SrtpCryptoContext
         {
             if (sender)
             {
-                logger.error(() ->
-                        "Discarding RTP packet with sequence number " + seqNo
-                            + ", SSRC " + (0xFFFFFFFFL & ssrc)
-                            + " because it has been received already! (roc "
-                            + roc + ", s_l " + s_l + ", guessedROC "
-                            + guessedROC + ")");
+                logger.error(
+                        "Discarding RTP packet with sequence number {}, SSRC {} because it has been received already!" +
+                        " (roc {}, s_l {}, guessedROC {})", seqNo, (0xFFFFFFFFL & ssrc), roc, s_l, guessedROC);
             }
             return SrtpErrorStatus.REPLAY_FAIL; // Packet received already!
         }
@@ -640,7 +618,7 @@ public class SrtpCryptoContext
         {
             if (encrypting)
             {
-                logger.info(() -> "Error encrypting SRTP packet: " + e.getMessage());
+                logger.info("Error encrypting SRTP packet: {}", e.getMessage());
                 return SrtpErrorStatus.FAIL;
             }
             else
@@ -651,7 +629,7 @@ public class SrtpCryptoContext
                 }
                 else
                 {
-                    logger.info(() -> "Error decrypting SRTP packet: " + e.getMessage());
+                    logger.info("Error decrypting SRTP packet: {}", e.getMessage());
                     return SrtpErrorStatus.FAIL;
                 }
             }
@@ -721,7 +699,7 @@ public class SrtpCryptoContext
      * @return {@link SrtpErrorStatus#OK} if the packet can be accepted; an error status if
      * the packet failed authentication or failed replay check
      */
-    synchronized public SrtpErrorStatus reverseTransformPacket(ByteArrayBuffer pkt, boolean skipDecryption)
+    public synchronized SrtpErrorStatus reverseTransformPacket(ByteArrayBuffer pkt, boolean skipDecryption)
         throws GeneralSecurityException
     {
         if (sender)
@@ -736,13 +714,8 @@ public class SrtpCryptoContext
 
         int seqNo = SrtpPacketUtils.getSequenceNumber(pkt);
 
-        logger.debug(() ->
-            "Reverse transform for SSRC " + this.ssrc
-                + " SeqNo=" + seqNo
-                + " s_l=" + s_l
-                + " seqNumSet=" + seqNumSet
-                + " guessedROC=" + guessedROC
-                + " roc=" + roc);
+        logger.debug("Reverse transform for SSRC {} SeqNo={} s_l={} seqNumSet={} guessedROC={} roc={}", this.ssrc,
+                seqNo, s_l, seqNumSet, guessedROC, roc);
 
         // Whether s_l was initialized while processing this packet.
         boolean seqNumWasJustSet = false;
@@ -796,14 +769,14 @@ public class SrtpCryptoContext
                 }
                 else
                 {
-                    logger.debug(() -> "SRTP auth failed for SSRC " + ssrc);
+                    logger.debug("SRTP auth failed for SSRC {}", ssrc);
                 }
 
                 ret = err;
             }
             else
             {
-                logger.debug(() -> "SRTP auth failed for SSRC " + ssrc);
+                logger.debug("SRTP auth failed for SSRC {}", ssrc);
                 ret = err;
             }
         }
@@ -845,7 +818,7 @@ public class SrtpCryptoContext
      *
      * @param pkt the RTP packet that is going to be sent out
      */
-    synchronized public SrtpErrorStatus transformPacket(ByteArrayBuffer pkt)
+    public synchronized SrtpErrorStatus transformPacket(ByteArrayBuffer pkt)
         throws GeneralSecurityException
     {
         if (!sender)
@@ -922,8 +895,9 @@ public class SrtpCryptoContext
      */
     private void logReplayWindow(long newIdx)
     {
-        logger.debug(() -> "Updated replay window with " + newIdx + ". " +
-            SrtpPacketUtils.formatReplayWindow((roc << 16 | s_l), replayWindow, REPLAY_WINDOW_SIZE));
+        if (logger.isDebugEnabled())
+            logger.debug("Updated replay window with {}. {}", newIdx,
+                    SrtpPacketUtils.formatReplayWindow((roc << 16 | s_l), replayWindow, REPLAY_WINDOW_SIZE));
    }
 
     /**

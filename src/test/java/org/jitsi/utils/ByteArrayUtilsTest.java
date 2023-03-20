@@ -15,16 +15,15 @@
  */
 package org.jitsi.utils;
 
-import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.Test;
 
 import static org.jitsi.utils.ByteArrayUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class ByteArrayUtilsTest
+class ByteArrayUtilsTest
 {
     @Test
-    public void testReadWriteShort()
+    void testReadWriteShort()
     {
         ByteArrayBuffer bab = new BasicByteArrayBuffer(10);
         int offset = 3;
@@ -39,7 +38,7 @@ public class ByteArrayUtilsTest
     }
 
     @Test
-    public void testReadWriteInt()
+    void testReadWriteInt()
     {
         ByteArrayBuffer bab = new BasicByteArrayBuffer(10);
         int offset = 3;
@@ -54,7 +53,7 @@ public class ByteArrayUtilsTest
     }
 
     @Test
-    public void testReadWriteUint16()
+    void testReadWriteUint16()
     {
         ByteArrayBuffer bab = new BasicByteArrayBuffer(10);
         int offset = 3;
@@ -65,7 +64,7 @@ public class ByteArrayUtilsTest
     }
 
     @Test
-    public void testReadWriteUint24()
+    void testReadWriteUint24()
     {
         ByteArrayBuffer bab = new BasicByteArrayBuffer(10);
         int offset = 3;
@@ -76,7 +75,7 @@ public class ByteArrayUtilsTest
     }
 
     @Test
-    public void testReadUint32()
+    void testReadUint32()
     {
         ByteArrayBuffer bab = new BasicByteArrayBuffer(10);
         int offset = 3;

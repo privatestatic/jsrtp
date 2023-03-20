@@ -38,7 +38,9 @@ import java.security.*;
 import javax.crypto.*;
 import org.jitsi.srtp.crypto.*;
 import org.jitsi.utils.*;
-import org.jitsi.utils.logging2.*;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * SrtpCryptoContext class is the core class of SRTP implementation. There can
@@ -130,7 +132,7 @@ public class BaseSrtpCryptoContext
             Logger parentLogger)
         throws GeneralSecurityException
     {
-        logger = parentLogger.createChildLogger(this.getClass().getName());
+        logger = LoggerFactory.getLogger(this.getClass());
         this.ssrc = ssrc;
         this.policy = policy;
 
@@ -204,7 +206,7 @@ public class BaseSrtpCryptoContext
         switch (policy.getAuthType())
         {
         case SrtpPolicy.HMACSHA1_AUTHENTICATION:
-            mac = HmacSha1.createMac(parentLogger);
+            mac = HmacSha1.createMac();
             break;
 
         case SrtpPolicy.SKEIN_AUTHENTICATION:
@@ -237,7 +239,7 @@ public class BaseSrtpCryptoContext
      * @param pkt the RTP packet to be authenticated
      * @param rocIn Roll-Over-Counter
      */
-    synchronized protected byte[] authenticatePacketHmac(ByteArrayBuffer pkt, int rocIn)
+    protected synchronized byte[] authenticatePacketHmac(ByteArrayBuffer pkt, int rocIn)
     {
         mac.update(pkt.getBuffer(), pkt.getOffset(), pkt.getLength());
         writeRoc(rocIn);

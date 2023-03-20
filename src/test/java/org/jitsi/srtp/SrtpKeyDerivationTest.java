@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.*;
 
-public class SrtpKeyDerivationTest {
+class SrtpKeyDerivationTest {
 
     /* Key derivation test vectors from RFC 3711. */
     private static final byte[] masterKey128 =
@@ -36,7 +36,7 @@ public class SrtpKeyDerivationTest {
             parseHexBinary("CEBE321F6FF7716B6FD4AB49AF256A156D38BAA4");
 
     @Test
-    public void srtpKdf128Test() throws Exception
+    void srtpKdf128Test() throws Exception
     {
         SrtpPolicy policy =
                 new SrtpPolicy(SrtpPolicy.AESCM_ENCRYPTION, 128/8,
@@ -73,7 +73,7 @@ public class SrtpKeyDerivationTest {
             parseHexBinary("fd9c32d39ed5fbb5a9dc96b30818454d1313dc05");
 
     @Test
-    public void srtpKdf256Test() throws Exception
+    void srtpKdf256Test() throws Exception
     {
         SrtpPolicy policy =
                 new SrtpPolicy(SrtpPolicy.AESCM_ENCRYPTION, 256/8,

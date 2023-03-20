@@ -18,16 +18,12 @@ package org.jitsi.srtp;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.jitsi.srtp.Assertions.*;
 
-import jakarta.xml.bind.*;
 import org.jitsi.utils.*;
-import org.jitsi.utils.logging2.*;
 import org.junit.jupiter.api.*;
-
 import static jakarta.xml.bind.DatatypeConverter.parseHexBinary;
 import java.util.*;
 
-
-public class SrtpValidationTest {
+class SrtpValidationTest {
     /* Test cases from libsrtp's srtp_driver.c. */
     private static final byte[] test_key =
             parseHexBinary("e1f97a0d3e018be0d64fa32c06de4139");
@@ -69,17 +65,15 @@ public class SrtpValidationTest {
 					     "54d6c1230798");
 
     @Test
-    public void srtpValidateCtrHmac() throws Exception
+    void srtpValidateCtrHmac() throws Exception
     {
-        Logger logger = new LoggerImpl(getClass().getName());
-
         SrtpPolicy policy =
                 new SrtpPolicy(SrtpPolicy.AESCM_ENCRYPTION, 128/8,
                         SrtpPolicy.HMACSHA1_AUTHENTICATION, 160/8,
                         80/8, 112/8 );
 
-        SrtpContextFactory senderFactory = new SrtpContextFactory(true, test_key, test_key_salt, policy, policy, logger);
-        SrtpContextFactory receiverFactory = new SrtpContextFactory(false, test_key, test_key_salt, policy, policy, logger);
+        SrtpContextFactory senderFactory = new SrtpContextFactory(true, test_key, test_key_salt, policy, policy);
+        SrtpContextFactory receiverFactory = new SrtpContextFactory(false, test_key, test_key_salt, policy, policy);
 
         SrtpCryptoContext rtpSend = senderFactory.deriveContext(0xcafebabe, 0);
 
@@ -122,17 +116,16 @@ public class SrtpValidationTest {
     }
 
     @Test
-    public void rejectInvalidCtrHmac() throws Exception
+    void rejectInvalidCtrHmac() throws Exception
     {
         SrtpPolicy policy =
             new SrtpPolicy(SrtpPolicy.AESCM_ENCRYPTION, 128/8,
                     SrtpPolicy.HMACSHA1_AUTHENTICATION, 160/8,
                     80/8, 112/8 );
-        Logger logger = new LoggerImpl(getClass().getName());
 
         for (int len = srtp_ciphertext.length; len > 0; len--)
         {
-            SrtpContextFactory receiverFactory = new SrtpContextFactory(false, test_key, test_key_salt, policy, policy, logger);
+            SrtpContextFactory receiverFactory = new SrtpContextFactory(false, test_key, test_key_salt, policy, policy);
             SrtpCryptoContext rtpRecv = receiverFactory.deriveContext(0xcafebabe, 0);
 
             ByteArrayBuffer rtpPkt = new ByteArrayBufferImpl(Arrays.copyOf(srtp_ciphertext, len), 0, len);
@@ -151,7 +144,7 @@ public class SrtpValidationTest {
 
         for (int i = 0; i < srtp_ciphertext.length; i++) {
             for (int j = 0; j < 8; j++) {
-                SrtpContextFactory receiverFactory = new SrtpContextFactory(false, test_key, test_key_salt, policy, policy, logger);
+                SrtpContextFactory receiverFactory = new SrtpContextFactory(false, test_key, test_key_salt, policy, policy);
                 SrtpCryptoContext rtpRecv = receiverFactory.deriveContext(0xcafebabe, 0);
 
                 ByteArrayBuffer rtpPkt = new ByteArrayBufferImpl(srtp_ciphertext.clone(), 0, srtp_ciphertext.length);
@@ -165,7 +158,7 @@ public class SrtpValidationTest {
         }
 
         for (int len = srtcp_ciphertext.length; len > 0; len--) {
-            SrtpContextFactory receiverFactory = new SrtpContextFactory(false, test_key, test_key_salt, policy, policy, logger);
+            SrtpContextFactory receiverFactory = new SrtpContextFactory(false, test_key, test_key_salt, policy, policy);
             SrtcpCryptoContext rtcpRecv = receiverFactory.deriveControlContext(0xcafebabe);
 
             ByteArrayBuffer rtcpPkt = new ByteArrayBufferImpl(Arrays.copyOf(srtcp_ciphertext, len), 0, len);
@@ -184,7 +177,7 @@ public class SrtpValidationTest {
 
         for (int i = 0; i < srtcp_ciphertext.length; i++) {
             for (int j = 0; j < 8; j++) {
-                SrtpContextFactory receiverFactory = new SrtpContextFactory(false, test_key, test_key_salt, policy, policy, logger);
+                SrtpContextFactory receiverFactory = new SrtpContextFactory(false, test_key, test_key_salt, policy, policy);
                 SrtcpCryptoContext rtcpRecv = receiverFactory.deriveControlContext(0xcafebabe);
 
                 ByteArrayBuffer rtcpPkt = new ByteArrayBufferImpl(srtcp_ciphertext.clone(), 0, srtcp_ciphertext.length);
@@ -199,17 +192,16 @@ public class SrtpValidationTest {
     }
 
     @Test
-    public void skipDecryptionCtrHmac() throws Exception
+    void skipDecryptionCtrHmac() throws Exception
     {
         SrtpPolicy policy =
             new SrtpPolicy(SrtpPolicy.AESCM_ENCRYPTION, 128/8,
                 SrtpPolicy.HMACSHA1_AUTHENTICATION, 160/8,
                 80/8, 112/8 );
-        Logger logger = new LoggerImpl(getClass().getName());
 
         for (int len = srtp_ciphertext.length; len > 0; len--)
         {
-            SrtpContextFactory receiverFactory = new SrtpContextFactory(false, test_key, test_key_salt, policy, policy, logger);
+            SrtpContextFactory receiverFactory = new SrtpContextFactory(false, test_key, test_key_salt, policy, policy);
             SrtpCryptoContext rtpRecv = receiverFactory.deriveContext(0xcafebabe, 0);
 
             ByteArrayBuffer rtpPkt = new ByteArrayBufferImpl(Arrays.copyOf(srtp_ciphertext, len), 0, len);
@@ -228,7 +220,7 @@ public class SrtpValidationTest {
 
         for (int i = 0; i < srtp_ciphertext.length; i++) {
             for (int j = 0; j < 8; j++) {
-                SrtpContextFactory receiverFactory = new SrtpContextFactory(false, test_key, test_key_salt, policy, policy, logger);
+                SrtpContextFactory receiverFactory = new SrtpContextFactory(false, test_key, test_key_salt, policy, policy);
                 SrtpCryptoContext rtpRecv = receiverFactory.deriveContext(0xcafebabe, 0);
 
                 ByteArrayBuffer rtpPkt = new ByteArrayBufferImpl(srtp_ciphertext.clone(), 0, srtp_ciphertext.length);
@@ -285,17 +277,15 @@ public class SrtpValidationTest {
             "80000001");
 
     @Test
-    public void srtpValidateGcm() throws Exception
+    void srtpValidateGcm() throws Exception
     {
-        Logger logger = new LoggerImpl(getClass().getName());
-
         SrtpPolicy policy =
             new SrtpPolicy(SrtpPolicy.AESGCM_ENCRYPTION, 128/8,
                 SrtpPolicy.NULL_AUTHENTICATION, 0,
                 128/8, 96/8 );
 
-        SrtpContextFactory senderFactory = new SrtpContextFactory(true, test_key_gcm, test_key_salt_gcm, policy, policy, logger);
-        SrtpContextFactory receiverFactory = new SrtpContextFactory(false, test_key_gcm, test_key_salt_gcm, policy, policy, logger);
+        SrtpContextFactory senderFactory = new SrtpContextFactory(true, test_key_gcm, test_key_salt_gcm, policy, policy);
+        SrtpContextFactory receiverFactory = new SrtpContextFactory(false, test_key_gcm, test_key_salt_gcm, policy, policy);
 
         SrtpCryptoContext rtpSend = senderFactory.deriveContext(0xcafebabe, 0);
 
@@ -340,10 +330,8 @@ public class SrtpValidationTest {
     }
 
     @Test
-    public void rejectInvalidGcm() throws Exception
+    void rejectInvalidGcm() throws Exception
     {
-        Logger logger = new LoggerImpl(getClass().getName());
-
         SrtpPolicy policy =
             new SrtpPolicy(SrtpPolicy.AESGCM_ENCRYPTION, 128/8,
                 SrtpPolicy.NULL_AUTHENTICATION, 0,
@@ -351,7 +339,7 @@ public class SrtpValidationTest {
 
         for (int len = srtp_ciphertext_gcm.length; len > 0; len--)
         {
-            SrtpContextFactory receiverFactory = new SrtpContextFactory(false, test_key_gcm, test_key_salt_gcm, policy, policy, logger);
+            SrtpContextFactory receiverFactory = new SrtpContextFactory(false, test_key_gcm, test_key_salt_gcm, policy, policy);
             SrtpCryptoContext rtpRecv = receiverFactory.deriveContext(0xcafebabe, 0);
 
             ByteArrayBuffer rtpPkt = new ByteArrayBufferImpl(Arrays.copyOf(srtp_ciphertext_gcm, len), 0, len);
@@ -370,7 +358,7 @@ public class SrtpValidationTest {
 
         for (int i = 0; i < srtp_ciphertext_gcm.length; i++) {
             for (int j = 0; j < 8; j++) {
-                SrtpContextFactory receiverFactory = new SrtpContextFactory(false, test_key_gcm, test_key_salt_gcm, policy, policy, logger);
+                SrtpContextFactory receiverFactory = new SrtpContextFactory(false, test_key_gcm, test_key_salt_gcm, policy, policy);
                 SrtpCryptoContext rtpRecv = receiverFactory.deriveContext(0xcafebabe, 0);
 
                 ByteArrayBuffer rtpPkt = new ByteArrayBufferImpl(srtp_ciphertext_gcm.clone(), 0, srtp_ciphertext_gcm.length);
@@ -384,7 +372,7 @@ public class SrtpValidationTest {
         }
 
         for (int len = srtcp_ciphertext_gcm.length; len > 0; len--) {
-            SrtpContextFactory receiverFactory = new SrtpContextFactory(false, test_key_gcm, test_key_salt_gcm, policy, policy, logger);
+            SrtpContextFactory receiverFactory = new SrtpContextFactory(false, test_key_gcm, test_key_salt_gcm, policy, policy);
             SrtcpCryptoContext rtcpRecv = receiverFactory.deriveControlContext(0xcafebabe);
 
             ByteArrayBuffer rtpPkt = new ByteArrayBufferImpl(Arrays.copyOf(srtcp_ciphertext_gcm, len), 0, len);
@@ -403,7 +391,7 @@ public class SrtpValidationTest {
 
         for (int i = 0; i < srtcp_ciphertext_gcm.length; i++) {
             for (int j = 0; j < 8; j++) {
-                SrtpContextFactory receiverFactory = new SrtpContextFactory(false, test_key_gcm, test_key_salt_gcm, policy, policy, logger);
+                SrtpContextFactory receiverFactory = new SrtpContextFactory(false, test_key_gcm, test_key_salt_gcm, policy, policy);
                 SrtcpCryptoContext rtcpRecv = receiverFactory.deriveControlContext(0xcafebabe);
 
                 ByteArrayBuffer rtcpPkt = new ByteArrayBufferImpl(srtcp_ciphertext_gcm.clone(), 0, srtcp_ciphertext_gcm.length);
@@ -418,10 +406,8 @@ public class SrtpValidationTest {
     }
 
     @Test
-    public void skipDecryptionGcm() throws Exception
+    void skipDecryptionGcm() throws Exception
     {
-        Logger logger = new LoggerImpl(getClass().getName());
-
         SrtpPolicy policy =
             new SrtpPolicy(SrtpPolicy.AESGCM_ENCRYPTION, 128/8,
                 SrtpPolicy.NULL_AUTHENTICATION, 0,
@@ -429,7 +415,7 @@ public class SrtpValidationTest {
 
         for (int len = srtp_ciphertext_gcm.length; len > 0; len--)
         {
-            SrtpContextFactory receiverFactory = new SrtpContextFactory(false, test_key_gcm, test_key_salt_gcm, policy, policy, logger);
+            SrtpContextFactory receiverFactory = new SrtpContextFactory(false, test_key_gcm, test_key_salt_gcm, policy, policy);
             SrtpCryptoContext rtpRecv = receiverFactory.deriveContext(0xcafebabe, 0);
 
             ByteArrayBuffer rtpPkt = new ByteArrayBufferImpl(Arrays.copyOf(srtp_ciphertext_gcm, len), 0, len);
@@ -448,7 +434,7 @@ public class SrtpValidationTest {
 
         for (int i = 0; i < srtp_ciphertext_gcm.length; i++) {
             for (int j = 0; j < 8; j++) {
-                SrtpContextFactory receiverFactory = new SrtpContextFactory(false, test_key_gcm, test_key_salt_gcm, policy, policy, logger);
+                SrtpContextFactory receiverFactory = new SrtpContextFactory(false, test_key_gcm, test_key_salt_gcm, policy, policy);
                 SrtpCryptoContext rtpRecv = receiverFactory.deriveContext(0xcafebabe, 0);
 
                 ByteArrayBuffer rtpPkt = new ByteArrayBufferImpl(srtp_ciphertext_gcm.clone(), 0, srtp_ciphertext_gcm.length);
@@ -739,18 +725,16 @@ public class SrtpValidationTest {
     }
 
     @Test
-    public void testCryptexCtrHmac() throws Exception
+    void testCryptexCtrHmac() throws Exception
     {
-        Logger logger = new LoggerImpl(getClass().getName());
-
         SrtpPolicy policy =
             new SrtpPolicy(SrtpPolicy.AESCM_ENCRYPTION, 128/8,
                 SrtpPolicy.HMACSHA1_AUTHENTICATION, 160/8,
                 80/8, 112/8 );
         policy.setCryptexEnabled(true);
 
-        SrtpContextFactory senderFactory = new SrtpContextFactory(true, test_key, test_key_salt, policy, policy, logger);
-        SrtpContextFactory receiverFactory = new SrtpContextFactory(false, test_key, test_key_salt, policy, policy, logger);
+        SrtpContextFactory senderFactory = new SrtpContextFactory(true, test_key, test_key_salt, policy, policy);
+        SrtpContextFactory receiverFactory = new SrtpContextFactory(false, test_key, test_key_salt, policy, policy);
 
         testPacket(senderFactory, receiverFactory, rtp_plaintext_ref, srtp_ciphertext, policy.getAuthTagLength());
 
@@ -769,17 +753,15 @@ public class SrtpValidationTest {
     }
 
     @Test
-    public void rejectInvalidCryptexCtrHmac() throws Exception
+    void rejectInvalidCryptexCtrHmac() throws Exception
     {
-        Logger logger = new LoggerImpl(getClass().getName());
-
         SrtpPolicy policy =
             new SrtpPolicy(SrtpPolicy.AESCM_ENCRYPTION, 128/8,
                 SrtpPolicy.HMACSHA1_AUTHENTICATION, 160/8,
                 80/8, 112/8 );
         policy.setCryptexEnabled(true);
 
-        SrtpContextFactory receiverFactory = new SrtpContextFactory(false, test_key, test_key_salt, policy, policy, logger);
+        SrtpContextFactory receiverFactory = new SrtpContextFactory(false, test_key, test_key_salt, policy, policy);
 
         SrtpCryptoContext rtpRecv = receiverFactory.deriveContext(0xcafebabe, 0);
 
@@ -876,10 +858,8 @@ public class SrtpValidationTest {
             + "c06ac429681ad08413512dc98b5207d8");
 
     @Test
-    public void testCryptexGcm() throws Exception
+    void testCryptexGcm() throws Exception
     {
-        Logger logger = new LoggerImpl(getClass().getName());
-
         SrtpPolicy policy =
             new SrtpPolicy(SrtpPolicy.AESGCM_ENCRYPTION, 128/8,
                 SrtpPolicy.NULL_AUTHENTICATION, 0,
@@ -890,8 +870,8 @@ public class SrtpValidationTest {
         policy.setReceiveReplayEnabled(false);
         // So we can encrypt and decrypt packets multiple times, with different offsets.
 
-        SrtpContextFactory senderFactory = new SrtpContextFactory(true, test_key_gcm, test_key_salt_gcm, policy, policy, logger);
-        SrtpContextFactory receiverFactory = new SrtpContextFactory(false, test_key_gcm, test_key_salt_gcm, policy, policy, logger);
+        SrtpContextFactory senderFactory = new SrtpContextFactory(true, test_key_gcm, test_key_salt_gcm, policy, policy);
+        SrtpContextFactory receiverFactory = new SrtpContextFactory(false, test_key_gcm, test_key_salt_gcm, policy, policy);
 
         testPacket(senderFactory, receiverFactory, rtp_plaintext_ref, srtp_ciphertext_gcm, policy.getAuthTagLength());
 
@@ -910,17 +890,15 @@ public class SrtpValidationTest {
     }
 
     @Test
-    public void rejectInvalidCryptexGcm() throws Exception
+    void rejectInvalidCryptexGcm() throws Exception
     {
-        Logger logger = new LoggerImpl(getClass().getName());
-
         SrtpPolicy policy =
             new SrtpPolicy(SrtpPolicy.AESGCM_ENCRYPTION, 128/8,
                 SrtpPolicy.NULL_AUTHENTICATION, 0,
                 128/8, 96/8 );
         policy.setCryptexEnabled(true);
 
-        SrtpContextFactory receiverFactory = new SrtpContextFactory(false, test_key_gcm, test_key_salt_gcm, policy, policy, logger);
+        SrtpContextFactory receiverFactory = new SrtpContextFactory(false, test_key_gcm, test_key_salt_gcm, policy, policy);
 
         SrtpCryptoContext rtpRecv = receiverFactory.deriveContext(0xcafebabe, 0);
 

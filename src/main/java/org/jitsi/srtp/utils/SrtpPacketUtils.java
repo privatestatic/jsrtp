@@ -15,9 +15,9 @@
  */
 package org.jitsi.srtp.utils;
 
-import org.jitsi.utils.*;
-
 import java.util.*;
+
+import org.jitsi.utils.ByteArrayBuffer;
 
 import static org.jitsi.utils.ByteArrayUtils.*;
 
@@ -98,9 +98,7 @@ public class SrtpPacketUtils
         // The "defined by profile" extension type comes after the RTP header and the CSRC list
         int extTypeIndex = FIXED_HEADER_SIZE + cc * 4;
 
-        int type = readUint16(buf, extTypeIndex);
-
-        return type;
+        return readUint16(buf, extTypeIndex);
     }
 
     /**
@@ -139,9 +137,7 @@ public class SrtpPacketUtils
         // two bytes in the extension header called "defined by profile".
         int extLenIndex = FIXED_HEADER_SIZE + cc * 4 + 2;
 
-        int len = readUint16(buf, extLenIndex) * 4;
-
-        return len;
+        return readUint16(buf, extLenIndex) * 4;
     }
 
     /**

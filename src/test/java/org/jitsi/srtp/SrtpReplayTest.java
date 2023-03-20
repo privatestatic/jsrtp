@@ -20,10 +20,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.security.*;
 import org.jitsi.utils.*;
-import org.jitsi.utils.logging2.*;
 import org.junit.jupiter.api.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class SrtpReplayTest {
+class SrtpReplayTest {
     private static final byte[] rtpPacketData =
             parseHexBinary("800f1234decafbad" +
                     "cafebabeabababab" +
@@ -48,10 +49,10 @@ public class SrtpReplayTest {
     private static final long NUM_SEQ_TESTS = 100000;
 
     @Test
-    public void TestRTPReplay()
+    void TestRTPReplay()
         throws GeneralSecurityException
     {
-        Logger logger = new LoggerImpl(getClass().getName());
+        Logger logger = LoggerFactory.getLogger(this.getClass());
 
         SrtpPolicy nullPolicy = new SrtpPolicy(SrtpPolicy.NULL_ENCRYPTION, 0, SrtpPolicy.NULL_AUTHENTICATION, 0, 0, 0);
 
@@ -111,10 +112,10 @@ public class SrtpReplayTest {
     }
 
     @Test
-    public void TestRTCPReplay()
+    void TestRTCPReplay()
         throws GeneralSecurityException
     {
-        Logger logger = new LoggerImpl(getClass().getName());
+        Logger logger = LoggerFactory.getLogger(this.getClass());
 
         SrtpPolicy nullPolicy = new SrtpPolicy(SrtpPolicy.NULL_ENCRYPTION, 0, SrtpPolicy.NULL_AUTHENTICATION, 0, 0, 0);
 

@@ -21,7 +21,8 @@ import javax.crypto.*;
 import javax.crypto.spec.*;
 import org.jitsi.srtp.utils.*;
 import org.jitsi.utils.*;
-import org.jitsi.utils.logging2.*;
+
+import org.slf4j.Logger;
 
 /**
  * SrtcpCryptoContext class is the core class of SRTCP implementation. There can
@@ -276,7 +277,7 @@ public class SrtcpCryptoContext
         {
             if (encrypting)
             {
-                logger.info(() -> "Error encrypting SRTCP packet: " + e.getMessage());
+                logger.info("Error encrypting SRTCP packet: {}", e.getMessage());
                 return SrtpErrorStatus.FAIL;
             }
             else
@@ -287,7 +288,7 @@ public class SrtcpCryptoContext
                 }
                 else
                 {
-                    logger.info(() -> "Error decrypting SRTCP packet: " + e.getMessage());
+                    logger.info("Error decrypting SRTCP packet: {}", e.getMessage());
                     return SrtpErrorStatus.FAIL;
                 }
             }
@@ -347,7 +348,7 @@ public class SrtcpCryptoContext
      * @return {@link SrtpErrorStatus#OK} if the packet can be accepted or
      * another error status if authentication or replay check failed
      */
-    synchronized public SrtpErrorStatus reverseTransformPacket(ByteArrayBuffer pkt)
+    public synchronized SrtpErrorStatus reverseTransformPacket(ByteArrayBuffer pkt)
         throws GeneralSecurityException
     {
         boolean decrypt = false;
@@ -458,7 +459,7 @@ public class SrtcpCryptoContext
      *
      * @param pkt the RTP packet that is going to be sent out
      */
-    synchronized public SrtpErrorStatus transformPacket(ByteArrayBuffer pkt)
+    public synchronized SrtpErrorStatus transformPacket(ByteArrayBuffer pkt)
         throws GeneralSecurityException
     {
         boolean encrypt = (policy.getEncType() != SrtpPolicy.NULL_ENCRYPTION);
@@ -512,8 +513,9 @@ public class SrtcpCryptoContext
      */
     private void logReplayWindow(long newIdx)
     {
-        logger.debug(() -> "Updated replay window with " + newIdx + ". " +
-            SrtpPacketUtils.formatReplayWindow(receivedIndex, replayWindow, REPLAY_WINDOW_SIZE));
+        if (logger.isDebugEnabled())
+            logger.debug("Updated replay window with {}. {}", newIdx,
+                    SrtpPacketUtils.formatReplayWindow(receivedIndex, replayWindow, REPLAY_WINDOW_SIZE));
     }
 
     /**

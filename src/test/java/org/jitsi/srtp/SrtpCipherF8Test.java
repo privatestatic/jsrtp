@@ -20,7 +20,6 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
 import java.util.Arrays;
 import javax.crypto.*;
-import org.bouncycastle.jce.provider.*;
 import org.jitsi.srtp.crypto.*;
 import org.junit.jupiter.api.*;
 
@@ -54,7 +53,7 @@ public class SrtpCipherF8Test
      * RFC3711
      */
     @Test
-    public void testAESF8() throws Exception
+    void testAESF8() throws Exception
     {
         SrtpCipherF8 cipher =
             new SrtpCipherF8(Aes.createCipher("AES/ECB/NoPadding"));
@@ -71,10 +70,10 @@ public class SrtpCipherF8Test
      * Validate our F8 mode implementation work with TwoFish
      */
     @Test
-    public void testTwoFish() throws Exception
+    void testTwoFish() throws Exception
     {
         SrtpCipherF8 cipher = new SrtpCipherF8(Cipher
-            .getInstance("Twofish/ECB/NoPadding", new BouncyCastleProvider()));
+            .getInstance("Twofish/ECB/NoPadding"));
         cipher.init(TV_Key, TV_Salt);
         byte[] data = Arrays.copyOf(TV_Plain, TV_Plain.length);
         byte[] iv = Arrays.copyOf(TV_IV, TV_IV.length);

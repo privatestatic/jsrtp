@@ -16,11 +16,6 @@
 package org.jitsi.srtp;
 
 import org.jitsi.utils.*;
-import org.junit.platform.commons.util.StringUtils;
-
-import java.util.function.*;
-
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
