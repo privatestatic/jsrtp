@@ -54,12 +54,6 @@ public class Aes
         = CipherFactory.class.getSimpleName();
 
     /**
-     * The default {@link CipherFactory} which is used as fallback.
-     */
-    private static final CipherFactory DEFAULT_FACTORY
-        = new SunJCECipherFactory();
-
-    /**
      * The {@link CipherFactory} implementations known to the {@link Aes}
      * class among which the fastest is to be elected as {@link #fastestFactories}
      * for each transformation.
@@ -414,8 +408,7 @@ public class Aes
                 {
                     if (factory == null)
                     {
-                        factory = Aes.fastestFactories
-                            .getOrDefault(transformation, DEFAULT_FACTORY);
+                        factory = Aes.fastestFactories.get(transformation);
                     }
 
                     CipherFactory oldFactory = Aes.fastestFactories
@@ -621,13 +614,7 @@ public class Aes
             {
                 if (CipherFactory.class.isAssignableFrom(clazz))
                 {
-                    CipherFactory factory;
-
-                    if (DEFAULT_FACTORY.getClass().equals(clazz))
-                        factory = DEFAULT_FACTORY;
-                    else
-                        factory = (CipherFactory) clazz.getConstructor().newInstance();
-
+                    CipherFactory factory = (CipherFactory) clazz.getConstructor().newInstance();
                     factories[i++] = factory;
                 }
             }

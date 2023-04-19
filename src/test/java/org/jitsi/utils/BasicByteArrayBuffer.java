@@ -1,3 +1,8 @@
+/*
+ * forked from project https://github.com/jitsi/jitsi-utils 
+ * from jitsi-utils/src/test/java/org/jitsi/utils/BasicByteArrayBuffer.java
+ */
+
 package org.jitsi.utils;
 
 import edu.umd.cs.findbugs.annotations.*;

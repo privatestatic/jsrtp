@@ -13,6 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+/*
+ * forked from project https://github.com/jitsi/jitsi-utils 
+ * from jitsi-utils/src/main/java/org/jitsi/utils/ByteArrayBuffer.java
+ */
 package org.jitsi.utils;
 
 /**

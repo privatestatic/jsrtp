@@ -18,8 +18,11 @@ package org.jitsi.srtp;
 import static jakarta.xml.bind.DatatypeConverter.parseHexBinary;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
+import java.security.Security;
 import java.util.Arrays;
 import javax.crypto.*;
+
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.jitsi.srtp.crypto.*;
 import org.junit.jupiter.api.*;
 
@@ -48,6 +51,16 @@ public class SrtpCipherF8Test
         parseHexBinary(
             "346d91e0d4c3908c476ba25f2792fbb65456f2d90736f40353da7865a8989f01947f6f09385fb5");
 
+    @BeforeAll
+    public static void init() {
+        Security.addProvider(new BouncyCastleProvider());
+    }
+    
+    @AfterAll
+    public static void cleanup() {
+        Security.removeProvider("BC");
+    }
+    
     /**
      * Validate our F8 mode implementation with tests vectors provided in
      * RFC3711
