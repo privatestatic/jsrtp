@@ -18,11 +18,13 @@
  * forked from project https://github.com/jitsi/libjitsi
  * from libjitsi/src/test/java/org/jitsi/util/RTPUtilsTest.java
  */
-package org.jitsi.util;
+package org.jitsi.utils;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
+
+import org.jitsi.utils.RTPUtils;
 import org.junit.jupiter.api.*;
 
 /**

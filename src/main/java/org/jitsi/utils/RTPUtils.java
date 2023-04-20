@@ -18,7 +18,7 @@
  * forked from project https://github.com/jitsi/libjitsi
  * from libjitsi/src/main/java/org/jitsi/util/RTPUtils.java
  */
-package org.jitsi.util;
+package org.jitsi.utils;
 
 import java.util.*;
 

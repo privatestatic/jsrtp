@@ -20,8 +20,8 @@
  */
 package org.jitsi.service.neomedia;
 
-import org.jitsi.util.*;
-import org.jitsi.utils.*;
+import org.jitsi.utils.ByteArrayBuffer;
+import org.jitsi.utils.RTPUtils;
 
 import java.util.*;
 
@@ -519,8 +519,10 @@ public class RawPacket
      * @param data byte array to append
      * @param len the number of bytes to append
      */
-    public void append(byte[] data, int len) {
-        if (data == null || len == 0)  {
+    public void append(byte[] data, int len)
+    {
+        if (data == null || len == 0)
+        {
             return;
         }
 
@@ -1431,7 +1433,8 @@ public class RawPacket
 
         int newLength = length + howMuch;
 
-        if (newLength > buffer.length - offset) {
+        if (newLength > buffer.length - offset)
+        {
             byte[] newBuffer = new byte[newLength];
 
             System.arraycopy(buffer, offset, newBuffer, 0, length);
