@@ -714,7 +714,7 @@ public class SrtpCryptoContext
 
         int seqNo = SrtpPacketUtils.getSequenceNumber(pkt);
 
-        logger.debug("Reverse transform for SSRC {} SeqNo={} s_l={} seqNumSet={} guessedROC={} roc={}", this.ssrc,
+        logger.trace("Reverse transform for SSRC {} SeqNo={} s_l={} seqNumSet={} guessedROC={} roc={}", this.ssrc,
                 seqNo, s_l, seqNumSet, guessedROC, roc);
 
         // Whether s_l was initialized while processing this packet.
@@ -895,8 +895,8 @@ public class SrtpCryptoContext
      */
     private void logReplayWindow(long newIdx)
     {
-        if (logger.isDebugEnabled())
-            logger.debug("Updated replay window with {}. {}", newIdx,
+        if (logger.isTraceEnabled())
+            logger.trace("Updated replay window with {}. {}", newIdx,
                     SrtpPacketUtils.formatReplayWindow((roc << 16 | s_l), replayWindow, REPLAY_WINDOW_SIZE));
    }
 
