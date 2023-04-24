@@ -20,6 +20,9 @@ import java.security.*;
 import java.util.*;
 import javax.crypto.*;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Factory which initializes a {@link Cipher} that is implemented by a {@link
  * Provider}.
@@ -28,39 +31,8 @@ import javax.crypto.*;
  */
 public class CipherFactory
 {
-    /**
-     * The {@link Provider} which provides the implementations of the {@link
-     * Cipher}s to be initialized by this instance.
-     */
-    protected final Provider provider;
-
-    /**
-     * Initializes a new {@link CipherFactory} instance which is to
-     * initialize {@link Cipher}s that are implemented by a specific
-     * {@link Provider}.
-     *
-     * @param provider the {@link Provider} which provides the
-     * implementations of the {@link Cipher} to be initialized.
-     */
-    public CipherFactory(Provider provider)
-    {
-        this.provider = Objects.requireNonNull(provider);
-    }
-
-    /**
-     * Initializes a new {@link CipherFactory} instance which is to
-     * initialize {@link Cipher}s that are implemented by a specific
-     * {@link Provider}.
-     *
-     * @param providerName the name of the {@link Provider} which
-     * provides the implementations of the {@link Cipher} to be
-     * initialized
-     */
-    public CipherFactory(String providerName)
-    {
-        this(Security.getProvider(providerName));
-    }
-
+    private static final Logger logger = LoggerFactory.getLogger(CipherFactory.class);
+    
     /**
      * Creates a cipher with the factory
      *
@@ -71,6 +43,11 @@ public class CipherFactory
     public Cipher createCipher(String transformation)
         throws Exception
     {
-        return Cipher.getInstance(transformation, provider);
+        Cipher cipher = Cipher.getInstance(transformation);
+        if (logger.isDebugEnabled())
+            logger.debug("Using '{}' to provide cipher for transformation '{}'.",
+                    Optional.ofNullable(cipher).map(Cipher::getProvider).map(Provider::getName).orElse("unknown"),
+                    transformation);
+        return cipher;
     }
 }

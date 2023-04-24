@@ -21,8 +21,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.security.*;
 import org.jitsi.utils.*;
 import org.junit.jupiter.api.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 class SrtpReplayTest {
     private static final byte[] rtpPacketData =
@@ -52,11 +50,9 @@ class SrtpReplayTest {
     void TestRTPReplay()
         throws GeneralSecurityException
     {
-        Logger logger = LoggerFactory.getLogger(this.getClass());
-
         SrtpPolicy nullPolicy = new SrtpPolicy(SrtpPolicy.NULL_ENCRYPTION, 0, SrtpPolicy.NULL_AUTHENTICATION, 0, 0, 0);
 
-        SrtpCryptoContext receiver = new SrtpCryptoContext(false, 0xcafebabe, 0, null, null, nullPolicy, logger);
+        SrtpCryptoContext receiver = new SrtpCryptoContext(false, 0xcafebabe, 0, null, null, nullPolicy);
 
         int latestSeq = -1;
         UtSim utSim = new UtSim();
@@ -115,11 +111,9 @@ class SrtpReplayTest {
     void TestRTCPReplay()
         throws GeneralSecurityException
     {
-        Logger logger = LoggerFactory.getLogger(this.getClass());
-
         SrtpPolicy nullPolicy = new SrtpPolicy(SrtpPolicy.NULL_ENCRYPTION, 0, SrtpPolicy.NULL_AUTHENTICATION, 0, 0, 0);
 
-        SrtcpCryptoContext receiver = new SrtcpCryptoContext(0xcafebabe, null, null, nullPolicy, logger);
+        SrtcpCryptoContext receiver = new SrtcpCryptoContext(0xcafebabe, null, null, nullPolicy);
 
         int latestSeq = -1;
         UtSim utSim = new UtSim();

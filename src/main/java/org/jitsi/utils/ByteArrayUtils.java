@@ -26,6 +26,10 @@ package org.jitsi.utils;
  */
 public class ByteArrayUtils
 {
+    private ByteArrayUtils()
+    {
+        throw new UnsupportedOperationException("Instantiation not allowed!");
+    }
     /**
      * Read a unsigned 16-bit value from a byte array buffer at a specified
      * offset as an int.

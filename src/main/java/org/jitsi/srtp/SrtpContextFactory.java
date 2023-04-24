@@ -19,9 +19,6 @@ import java.security.*;
 
 import java.util.*;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * The {@link SrtpContextFactory} creates the initial crypto contexts for RTP
  * and RTCP encryption using the supplied key material.
@@ -56,11 +53,6 @@ public class SrtpContextFactory
      * Encryption / Authentication policy for SRTCP
      */
     private final SrtpPolicy srtcpPolicy;
-
-    /**
-     * Logger for SrtpContextFactory and derived objects.
-     */
-    private static final Logger logger = LoggerFactory.getLogger(SrtpContextFactory.class);
 
     /**
      * Construct a SrtpTransformEngine based on given master encryption key,
@@ -168,8 +160,7 @@ public class SrtpContextFactory
                 roc,
                 masterKey,
                 masterSalt,
-                srtpPolicy,
-                logger);
+                srtpPolicy);
     }
 
     /**
@@ -190,7 +181,6 @@ public class SrtpContextFactory
                 ssrc,
                 masterKey,
                 masterSalt,
-                srtcpPolicy,
-                logger);
+                srtcpPolicy);
     }
 }

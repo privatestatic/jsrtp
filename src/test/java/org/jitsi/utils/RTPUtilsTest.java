@@ -24,14 +24,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
 
-import org.jitsi.utils.RTPUtils;
 import org.junit.jupiter.api.*;
 
 /**
  * @author Boris Grozev
  */
-@SuppressWarnings("deprecation")
-public class RTPUtilsTest
+class RTPUtilsTest
 {
     /**
      * Keep the seed the same to keep the tests deterministic (although ideally
@@ -41,7 +39,7 @@ public class RTPUtilsTest
     private static final Random random = new Random(602214086);
 
     @Test
-    public void testReadUint16AsInt()
+    void testReadUint16AsInt()
     {
         byte[] buf = new byte[2];
         for (int i = 0; i < 0xffff; i++)
@@ -55,7 +53,7 @@ public class RTPUtilsTest
     }
 
     @Test
-    public void testReadInt16AsInt()
+    void testReadInt16AsInt()
     {
         byte[] buf = new byte[2];
         for (short i = Short.MIN_VALUE; i < Short.MAX_VALUE; i++)
@@ -68,7 +66,7 @@ public class RTPUtilsTest
     }
 
     @Test
-    public void testGetSequenceNumberDelta()
+    void testGetSequenceNumberDelta()
     {
         assertEquals(-9, RTPUtils.getSequenceNumberDelta(1, 10));
         assertEquals(9, RTPUtils.getSequenceNumberDelta(10, 1));
@@ -80,7 +78,7 @@ public class RTPUtilsTest
     }
 
     @Test
-    public void testIsOlderSequenceNumberThan()
+    void testIsOlderSequenceNumberThan()
     {
         assertTrue(RTPUtils.isOlderSequenceNumberThan(1, 10));
         assertFalse(RTPUtils.isOlderSequenceNumberThan(10, 1));
@@ -92,7 +90,7 @@ public class RTPUtilsTest
     }
 
     @Test
-    public void testUint24()
+    void testUint24()
     {
         byte[] buf = new byte[3];
         for (int x = 0; x < 10000; x++)

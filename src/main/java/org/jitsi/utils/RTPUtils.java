@@ -25,20 +25,24 @@ import java.util.*;
 /**
  * RTP-related static utility methods.
  *
- * @deprecated use org.jitsi.rtp.util.RtpUtils (requires Kotlin)
- *
  * @author Boris Grozev
  */
 public class RTPUtils
 {
+    private RTPUtils()
+    {
+        throw new UnsupportedOperationException("Instantiation not allowed!");
+    }
+    
     /**
      * Hex characters for converting bytes to readable hex strings
      */
-    private final static char[] HEXES = new char[]
-        {
-            '0', '1', '2', '3', '4', '5', '6', '7', '8',
-            '9', 'A', 'B', 'C', 'D', 'E', 'F'
-        };
+    private static final char[] HEXES = new char[]
+    {
+        '0', '1', '2', '3', '4', '5', '6', '7', '8',
+        '9', 'A', 'B', 'C', 'D', 'E', 'F'
+    };
+    
     /**
      * Returns the delta between two RTP sequence numbers, taking into account
      * rollover.  This will return the 'shortest' delta between the two
@@ -192,8 +196,7 @@ public class RTPUtils
     {
         int b1 = (0xFF & (buf[off + 0]));
         int b2 = (0xFF & (buf[off + 1]));
-        int val = b1 << 8 | b2;
-        return val;
+        return b1 << 8 | b2;
     }
 
     /**
@@ -264,36 +267,32 @@ public class RTPUtils
      * E.g. it works for: [0, 2^15-1] and ([50000, 2^16) u [0, 10000])
      * Doesn't work for: [0, 2^15] and ([0, 2^15-1] u {2^16-1}) and [0, 2^16)
      */
-    public static final Comparator<? super Integer> sequenceNumberComparator
-        = new Comparator<Integer>() {
-        @Override
-        public int compare(Integer a, Integer b)
+    public static final Comparator<? super Integer> sequenceNumberComparator = (a, b) -> 
+    {
+        if (a.equals(b))
         {
-            if (a.equals(b))
+            return 0;
+        }
+        else if (a > b)
+        {
+            if (a - b < 0x10000)
             {
-                return 0;
+                return 1;
             }
-            else if (a > b)
+            else
             {
-                if (a - b < 0x10000)
-                {
-                    return 1;
-                }
-                else
-                {
-                    return -1;
-                }
+                return -1;
             }
-            else //a < b
+        }
+        else //a < b
+        {
+            if (b - a < 0x10000)
             {
-                if (b - a < 0x10000)
-                {
-                    return -1;
-                }
-                else
-                {
-                    return 1;
-                }
+                return -1;
+            }
+            else
+            {
+                return 1;
             }
         }
     };

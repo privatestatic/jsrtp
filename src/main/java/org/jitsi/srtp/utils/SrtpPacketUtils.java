@@ -26,6 +26,11 @@ import static org.jitsi.utils.ByteArrayUtils.*;
  */
 public class SrtpPacketUtils
 {
+    private SrtpPacketUtils()
+    {
+        throw new UnsupportedOperationException("Instantiation not allowed!");
+    }
+    
     /**
      * The size of the fixed part of the RTP header as defined by RFC 3550.
      */
@@ -227,8 +232,11 @@ public class SrtpPacketUtils
     public static String formatReplayWindow(long maxIdx, long replayWindow, long replayWindowSize)
     {
         StringBuilder out = new StringBuilder();
-        Formatter formatter = new Formatter(out);
-        formatter.format("maxIdx=%d, window=0x%016x: [", maxIdx, replayWindow);
+        
+        try(Formatter formatter = new Formatter(out)) 
+        {
+            formatter.format("maxIdx=%d, window=0x%016x: [", maxIdx, replayWindow);
+        }
 
         boolean printedSomething = false;
         for (long i = replayWindowSize - 1; i >= 0; i--)

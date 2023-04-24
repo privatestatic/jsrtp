@@ -19,7 +19,6 @@ import static jakarta.xml.bind.DatatypeConverter.parseHexBinary;
 
 import gnu.getopt.*;
 import java.security.*;
-import org.jitsi.srtp.crypto.*;
 import org.jitsi.utils.*;
 import org.junit.jupiter.api.*;
 import java.time.*;
@@ -229,7 +228,7 @@ public class SrtpPerfTest {
 
     private static void usage()
     {
-        System.err.println ("Usage: " + progName + " [-f AES factory] [-p payloadSize] [numTests]");
+        System.err.println ("Usage: " + progName + " [-p payloadSize] [numTests]");
         System.exit(2);
     }
 
@@ -240,7 +239,7 @@ public class SrtpPerfTest {
         int payloadSize = DEFAULT_PAYLOAD_SIZE;
         int numWarmups = DEFAULT_NUM_WARMUPS;
 
-        Getopt g = new Getopt(progName, args, "f:p:w:");
+        Getopt g = new Getopt(progName, args, "p:w:");
 
         int c;
         String arg;
@@ -248,10 +247,6 @@ public class SrtpPerfTest {
         {
             switch(c)
             {
-                case 'f':
-                    arg = g.getOptarg();
-                    Aes.setFactoryClassName(arg);
-                    break;
                 case 'p':
                     arg = g.getOptarg();
                     try {

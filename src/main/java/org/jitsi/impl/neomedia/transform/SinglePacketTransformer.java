@@ -79,15 +79,13 @@ public abstract class SinglePacketTransformer
      * A cached link to {@link #reverseTransform(RawPacket)} method to reduce
      * calling overhead on hotpath.
      */
-    private final Function<RawPacket, RawPacket> cachedReverseTransform
-        = pkt -> this.reverseTransform(pkt);
+    private final Function<RawPacket, RawPacket> cachedReverseTransform = this::reverseTransform;
 
     /**
      * A cached link to {@link #transform(RawPacket)} method to reduce
      * calling overhead on hotpath.
      */
-    private final Function<RawPacket, RawPacket> cachedTransform
-        = pkt -> this.transform(pkt);
+    private final Function<RawPacket, RawPacket> cachedTransform = this::transform;
 
     /**
      * Ctor.

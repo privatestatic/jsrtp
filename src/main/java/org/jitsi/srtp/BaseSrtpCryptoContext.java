@@ -128,8 +128,7 @@ public class BaseSrtpCryptoContext
             int ssrc,
             byte[] masterK,
             byte[] masterS,
-            SrtpPolicy policy,
-            Logger parentLogger)
+            SrtpPolicy policy)
         throws GeneralSecurityException
     {
         logger = LoggerFactory.getLogger(this.getClass());
@@ -202,23 +201,23 @@ public class BaseSrtpCryptoContext
 
         ivStore = new byte[ivSize];
 
-        Mac mac;
+        Mac localMac;
         switch (policy.getAuthType())
         {
         case SrtpPolicy.HMACSHA1_AUTHENTICATION:
-            mac = HmacSha1.createMac();
+            localMac = HmacSha1.createMac();
             break;
 
         case SrtpPolicy.SKEIN_AUTHENTICATION:
-            mac = Mac.getInstance("SkeinMac_512_" + (policy.getAuthTagLength() * 8));
+            localMac = Mac.getInstance("SkeinMac_512_" + (policy.getAuthTagLength() * 8));
             break;
 
         case SrtpPolicy.NULL_AUTHENTICATION:
         default:
-            mac = null;
+            localMac = null;
             break;
         }
-        this.mac = mac;
+        this.mac = localMac;
     }
 
 

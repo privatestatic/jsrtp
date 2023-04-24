@@ -24,6 +24,11 @@ import static org.jitsi.utils.ByteArrayUtils.*;
  */
 public class SrtcpPacketUtils
 {
+    private SrtcpPacketUtils()
+    {
+        throw new UnsupportedOperationException("Instantiation not allowed!");
+    }
+    
     /**
      * Get the sender SSRC of an SRTCP packet.
      *
@@ -64,10 +69,6 @@ public class SrtcpPacketUtils
         int length = buf.getLength();
         int neededLength = 8 /* sender SSRC */ + 4 /* index */ + authTagLen;
 
-        if (length < neededLength)
-        {
-            return false;
-        }
-        return true;
+        return length >= neededLength;
     }
 }

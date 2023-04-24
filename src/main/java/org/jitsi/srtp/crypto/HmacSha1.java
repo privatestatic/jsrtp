@@ -17,8 +17,6 @@ package org.jitsi.srtp.crypto;
 
 import java.security.*;
 import java.util.*;
-import java.util.stream.Collectors;
-
 import javax.crypto.*;
 
 import org.slf4j.Logger;
@@ -33,50 +31,31 @@ public class HmacSha1
 {   
     private static final Logger logger = LoggerFactory.getLogger(HmacSha1.class);
     
-    private static synchronized List<Provider> getProviders()
+    private HmacSha1()
     {
-// Set<String> installedProvidersNames = getInstalledProvidersNames();
-// logger.info("Installed provider names: {}", installedProvidersNames.stream().collect(Collectors.joining(",")));
-        return Arrays.stream(Security.getProviders()).collect(Collectors.toList());
+        throw new UnsupportedOperationException("Instantiation not allowed!");
     }
-    
-// private static Set<String> getInstalledProvidersNames() {
-// return Arrays.stream(Security.getProviders()).map(Provider::getName).collect(Collectors.toSet());
-// }
 
     /**
      * Initializes a new {@link Mac} instance which implements a keyed-hash
      * message authentication code (HMAC) with SHA-1.
      *
-     * @param parentLogger the logging context
      * @return a new {@link Mac} instance which implements a keyed-hash message
      * authentication code (HMAC) with SHA-1
      */
     public static Mac createMac()
     {
-        // Try providers in order
-        for (Provider p : getProviders())
+        try 
         {
-            try
-            {
-                Mac mac = Mac.getInstance("HmacSHA1", p);
-                logger.debug("Using {} for HMAC", p.getName());
-                return mac;
-            }
-            catch (NoSuchAlgorithmException e)
-            {
-                // continue
-            }
-        }
-
-        throw new RuntimeException("No HmacSHA1 provider found");
-    }
-
-    private static class MacWrapper extends Mac
-    {
-        public MacWrapper(MacSpi macSpi, Provider provider, String s)
+            Mac mac = Mac.getInstance("HmacSHA1");
+            if (logger.isDebugEnabled())
+                logger.debug("Using '{}' for HMAC",
+                        Optional.ofNullable(mac).map(Mac::getProvider).map(Provider::getName).orElse("unknown"));
+            return mac;
+        } 
+            catch (NoSuchAlgorithmException e) 
         {
-            super(macSpi, provider, s);
+            throw new RuntimeException("No HmacSHA1 provider found");
         }
     }
 }

@@ -22,8 +22,6 @@ import javax.crypto.spec.*;
 import org.jitsi.srtp.utils.*;
 import org.jitsi.utils.*;
 
-import org.slf4j.Logger;
-
 /**
  * SrtcpCryptoContext class is the core class of SRTCP implementation. There can
  * be multiple SRTCP sources in one SRTP session. And each SRTCP stream has a
@@ -79,11 +77,10 @@ public class SrtcpCryptoContext
             int ssrc,
             byte[] masterK,
             byte[] masterS,
-            SrtpPolicy policy,
-            Logger parentLogger)
+            SrtpPolicy policy)
         throws GeneralSecurityException
     {
-        super(ssrc, masterK, masterS, policy, parentLogger);
+        super(ssrc, masterK, masterS, policy);
 
         deriveSrtcpKeys(masterK, masterS);
     }

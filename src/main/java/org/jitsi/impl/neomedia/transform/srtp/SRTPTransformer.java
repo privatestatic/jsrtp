@@ -96,7 +96,7 @@ public class SRTPTransformer
     {
         this.forwardFactory = forwardFactory;
         this.reverseFactory = reverseFactory;
-        this.contexts = new HashMap<Integer,SrtpCryptoContext>();
+        this.contexts = new HashMap<>();
     }
 
     /**
@@ -139,6 +139,7 @@ public class SRTPTransformer
      * engines.It closes all stored crypto contexts. It deletes key data and
      * forces a cleanup of the crypto contexts.
      */
+    @Override
     public void close()
     {
         synchronized (contexts)
