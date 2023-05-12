@@ -9,3 +9,5 @@
 *.iml
 cmake-*/
 resources/sources_*.list
+.sdkmanrc
+.vscode/

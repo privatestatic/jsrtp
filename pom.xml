@@ -3,38 +3,25 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.jitsi</groupId>
-    <artifactId>jitsi-srtp-basic</artifactId>
-    <version>1.1-SNAPSHOT</version>
+    <groupId>com.github</groupId>
+    <artifactId>jsrtp</artifactId>
+    <version>0.1-SNAPSHOT</version>
 
-    <name>Jitsi Secure RTP implementation</name>
-    <description>Jitsi SRTP contains classes for encrypting and decrypting SRTP and SRTCP packets</description>
-    <url>https://github.com/jitsi/jitsi-srtp</url>
-
-    <organization>
-        <name>jitsi.org</name>
-        <url>https://jitsi.org</url>
-    </organization>
-
-    <developers>
-        <developer>
-            <id>org.jitsi</id>
-            <name>Jitsi Team</name>
-            <email>dev@jitsi.org</email>
-        </developer>
-    </developers>
+    <name>jSRTP - Java Secure RTP implementation</name>
+    <description>Stripped down fork of jitsi-srtp meant to be used without further jitsi dependencies</description>
+    <url>https://github.com/privatestatic/jsrtp</url>
 
     <scm>
-        <url>https://github.com/jitsi/jitsi-srtp</url>
-        <connection>scm:git:https://github.com/jitsi/jitsi-srtp.git</connection>
-        <developerConnection>scm:git:https://github.com/jitsi/jitsi-srtp.git</developerConnection>
+        <url>https://github.com/privatestatic/jsrtp</url>
+        <connection>scm:git:https://github.com/privatestatic/jsrtp.git</connection>
+        <developerConnection>scm:git:https://github.com/privatestatic/jsrtp.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
 
     <licenses>
         <license>
             <name>Apache-2.0</name>
-            <url>https://github.com/jitsi/jitsi-srtp/blob/master/LICENSE</url>
+            <url>https://github.com/privatestatic/jsrtp/blob/main/LICENSE</url>
             <distribution>repo</distribution>
         </license>
     </licenses>
@@ -42,6 +29,7 @@
     <properties>
         <java.version>11</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.plugin.validation>VERBOSE</maven.plugin.validation>
 
         <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
         <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
