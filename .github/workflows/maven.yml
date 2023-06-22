@@ -1,24 +1,11 @@
-name: Java CI with Maven
+name: Build with Maven
 
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
-
-env:
-  # Java version to use for the release
-  RELEASE_JAVA_VERSION: 11
-  UBUNTU_MIRROR_AMD64: http://azure.archive.ubuntu.com/ubuntu
-  DOCKER_BUILDKIT: 1
-
-concurrency:
-  group: ${{ github.ref }}
-  cancel-in-progress: true
 
 jobs:
-  test:
-
+  build-on-ubuntu:
     runs-on: ubuntu-latest
 
     strategy:
@@ -28,84 +15,14 @@ jobs:
     name: Java ${{ matrix.java }}
 
     steps:
-      - name: Checkout
+      - name: Step 1 - Checkout main branch from Github
         uses: actions/checkout@v3
 
-      - name: Set up JDK ${{ matrix.java }}
+      - name: Step 2 - Set up JDK ${{ matrix.java }}
         uses: actions/setup-java@v3
         with:
           distribution: temurin
           java-version: ${{ matrix.java }}
-          cache: maven
 
-      - name: Build and test with Maven
-        run: mvn -B verify -DperformRelease=true -Pcoverage -DskipNativeTests=true
-
-      - name: Upload coverage report
-        if: matrix.java == env.RELEASE_JAVA_VERSION
-        uses: codecov/codecov-action@v2
-
-  release:
-    name: Test and release
-    needs:
-      - test
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-
-      - name: Set up JDK
-        uses: actions/setup-java@v3
-        with:
-          distribution: temurin
-          java-version: ${{ env.RELEASE_JAVA_VERSION }}
-          cache: maven
-          server-id: ossrh
-          server-username: SONATYPE_USER
-          server-password: SONATYPE_PW
-
-      - name: Set version
-        run: |
-          VERSION=`git describe --match "v[0-9\.]*" --long --dirty --always`
-          mvn -B versions:set -DnewVersion=${VERSION:1} -DgenerateBackupPoms=false
-
-      - name: Run Maven tests (if PR)
-        if: github.ref != 'refs/heads/main'
-        run: mvn -B verify -DperformRelease=true
-
-      - name: Run Maven tests (if release)
-        if: github.ref == 'refs/heads/main'
-        run: mvn -B test
-
-      - name: Attach final jars (if PR)
-        uses: actions/upload-artifact@v3
-        if: github.ref != 'refs/heads/main'
-        with:
-          name: jars
-          path: target/*.jar
-
-      - name: Test and release to Maven Central
-        if: github.ref == 'refs/heads/main'
-        env:
-          SONATYPE_USER: ${{ secrets.SONATYPE_USER }}
-          SONATYPE_PW: ${{ secrets.SONATYPE_PW }}
-        run: |
-          cat <(echo -e "${{ secrets.GPG_KEY }}") | gpg --batch --import
-          gpg --list-secret-keys --keyid-format LONG
-          mvn \
-            --no-transfer-progress \
-            --batch-mode \
-            -Dgpg.passphrase="${{ secrets.GPG_PW }}" \
-            -DperformRelease=true \
-            -Drelease=true \
-            -DskipTests \
-            deploy
-
-      - name: Attach final jars (after releasing to Maven Central)
-        uses: actions/upload-artifact@v3
-        if: github.ref == 'refs/heads/main'
-        with:
-          name: jars
-          path: target/*.jar
+      - name: Step 3 - Build and verify with Maven
+        run: mvn -B verify -DperformRelease=false -DskipNativeTests=true
