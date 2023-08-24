@@ -15,6 +15,8 @@
  */
 package org.jitsi.srtp;
 
+import static java.lang.System.Logger.Level.*;
+import java.lang.System.Logger;
 import java.security.*;
 import java.security.spec.*;
 import javax.crypto.*;
@@ -49,6 +51,12 @@ import org.jitsi.utils.*;
 public class SrtcpCryptoContext
     extends BaseSrtpCryptoContext
 {
+
+    /**
+     * Logger for SrtcpCryptoContext objects.
+     */
+    private static final Logger logger = System.getLogger(SrtcpCryptoContext.class.getName());
+    
     /**
      * Index received so far
      */
@@ -274,7 +282,7 @@ public class SrtcpCryptoContext
         {
             if (encrypting)
             {
-                logger.info("Error encrypting SRTCP packet: {}", e.getMessage());
+                logger.log(INFO, "Error encrypting SRTCP packet: {}", e.getMessage());
                 return SrtpErrorStatus.FAIL;
             }
             else
@@ -285,7 +293,7 @@ public class SrtcpCryptoContext
                 }
                 else
                 {
-                    logger.info("Error decrypting SRTCP packet: {}", e.getMessage());
+                    logger.log(INFO, "Error decrypting SRTCP packet: {}", e.getMessage());
                     return SrtpErrorStatus.FAIL;
                 }
             }
@@ -510,8 +518,8 @@ public class SrtcpCryptoContext
      */
     private void logReplayWindow(long newIdx)
     {
-        if (logger.isDebugEnabled())
-            logger.debug("Updated replay window with {}. {}", newIdx,
+        if (logger.isLoggable(DEBUG))
+            logger.log(DEBUG, "Updated replay window with {}. {}", newIdx,
                     SrtpPacketUtils.formatReplayWindow(receivedIndex, replayWindow, REPLAY_WINDOW_SIZE));
     }
 

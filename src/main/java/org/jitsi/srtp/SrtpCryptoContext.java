@@ -34,6 +34,8 @@
 */
 package org.jitsi.srtp;
 
+import static java.lang.System.Logger.Level.*;
+import java.lang.System.Logger;
 import java.security.*;
 import java.util.*;
 
@@ -71,6 +73,12 @@ import org.jitsi.utils.*;
 public class SrtpCryptoContext
     extends BaseSrtpCryptoContext
 {
+    
+    /**
+     * Logger for SrtpCryptoContext objects.
+     */
+    private static final Logger logger = System.getLogger(SrtpCryptoContext.class.getName());
+    
     /**
      * Secondary cipher for decrypting packets in auth-only mode.
      */
@@ -221,9 +229,10 @@ public class SrtpCryptoContext
         {
             if (sender)
             {
-                logger.error(
-                        "Discarding RTP packet with sequence number {}, SSRC {} because it is outside the replay" + 
-                        " window! (roc {}, s_l {}, guessedROC {})", seqNo, (0xFFFFFFFFL & ssrc), roc, s_l, guessedROC);
+                logger.log(ERROR,
+                        "Discarding RTP packet with sequence number {}, SSRC {} because it is outside the replay"
+                                + " window! (roc {}, s_l {}, guessedROC {})",
+                        seqNo, (0xFFFFFFFFL & ssrc), roc, s_l, guessedROC);
             }
             return SrtpErrorStatus.REPLAY_OLD; // Packet too old.
         }
@@ -231,9 +240,10 @@ public class SrtpCryptoContext
         {
             if (sender)
             {
-                logger.error(
-                        "Discarding RTP packet with sequence number {}, SSRC {} because it has been received already!" +
-                        " (roc {}, s_l {}, guessedROC {})", seqNo, (0xFFFFFFFFL & ssrc), roc, s_l, guessedROC);
+                logger.log(ERROR,
+                        "Discarding RTP packet with sequence number {}, SSRC {} because it has been received already!"
+                                + " (roc {}, s_l {}, guessedROC {})",
+                        seqNo, (0xFFFFFFFFL & ssrc), roc, s_l, guessedROC);
             }
             return SrtpErrorStatus.REPLAY_FAIL; // Packet received already!
         }
@@ -615,7 +625,7 @@ public class SrtpCryptoContext
         {
             if (encrypting)
             {
-                logger.info("Error encrypting SRTP packet: {}", e.getMessage());
+                logger.log(INFO, "Error encrypting SRTP packet: {}", e.getMessage());
                 return SrtpErrorStatus.FAIL;
             }
             else
@@ -626,7 +636,7 @@ public class SrtpCryptoContext
                 }
                 else
                 {
-                    logger.info("Error decrypting SRTP packet: {}", e.getMessage());
+                    logger.log(INFO, "Error decrypting SRTP packet: {}", e.getMessage());
                     return SrtpErrorStatus.FAIL;
                 }
             }
@@ -711,7 +721,7 @@ public class SrtpCryptoContext
 
         int seqNo = SrtpPacketUtils.getSequenceNumber(pkt);
 
-        logger.trace("Reverse transform for SSRC {} SeqNo={} s_l={} seqNumSet={} guessedROC={} roc={}", this.ssrc,
+        logger.log(TRACE, "Reverse transform for SSRC {} SeqNo={} s_l={} seqNumSet={} guessedROC={} roc={}", this.ssrc,
                 seqNo, s_l, seqNumSet, guessedROC, roc);
 
         // Whether s_l was initialized while processing this packet.
@@ -766,14 +776,14 @@ public class SrtpCryptoContext
                 }
                 else
                 {
-                    logger.debug("SRTP auth failed for SSRC {}", ssrc);
+                    logger.log(DEBUG, "SRTP auth failed for SSRC {}", ssrc);
                 }
 
                 ret = err;
             }
             else
             {
-                logger.debug("SRTP auth failed for SSRC {}", ssrc);
+                logger.log(DEBUG, "SRTP auth failed for SSRC {}", ssrc);
                 ret = err;
             }
         }
@@ -892,8 +902,8 @@ public class SrtpCryptoContext
      */
     private void logReplayWindow(long newIdx)
     {
-        if (logger.isTraceEnabled())
-            logger.trace("Updated replay window with {}. {}", newIdx,
+        if (logger.isLoggable(TRACE))
+            logger.log(TRACE, "Updated replay window with {}. {}", newIdx,
                     SrtpPacketUtils.formatReplayWindow((roc << 16 | s_l), replayWindow, REPLAY_WINDOW_SIZE));
    }
 

@@ -15,12 +15,12 @@
  */
 package org.jitsi.srtp.crypto;
 
+import static java.lang.System.Logger.Level.*;
+import java.lang.System.Logger;
+
 import java.security.*;
 import java.util.*;
 import javax.crypto.*;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Implements a factory for an HMAC-SHA1 {@link Mac}.
@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
  */
 public class HmacSha1
 {   
-    private static final Logger logger = LoggerFactory.getLogger(HmacSha1.class);
+    private static final Logger logger = System.getLogger(HmacSha1.class.getName());
     
     private HmacSha1()
     {
@@ -48,8 +48,8 @@ public class HmacSha1
         try 
         {
             Mac mac = Mac.getInstance("HmacSHA1");
-            if (logger.isDebugEnabled())
-                logger.debug("Using '{}' for HMAC",
+            if (logger.isLoggable(DEBUG))
+                logger.log(DEBUG, "Using '{}' for HMAC",
                         Optional.ofNullable(mac).map(Mac::getProvider).map(Provider::getName).orElse("unknown"));
             return mac;
         } 

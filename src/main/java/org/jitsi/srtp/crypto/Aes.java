@@ -15,8 +15,8 @@
  */
 package org.jitsi.srtp.crypto;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static java.lang.System.Logger.Level.*;
+import java.lang.System.Logger;
 
 import javax.crypto.*;
 
@@ -39,7 +39,7 @@ public class Aes
      * The {@link Logger} used by the {@link Aes} class to print out debug
      * information.
      */
-    private static final Logger logger = LoggerFactory.getLogger(Aes.class);
+    private static final Logger logger = System.getLogger(Aes.class.getName());
 
     /**
      * Initializes a new {@link Cipher} instance which implements Advanced
@@ -65,7 +65,8 @@ public class Aes
             } 
                 catch (Exception e)
             {
-                logger.warn("Failed to initialize an optimized AES implementation: {}", e.getLocalizedMessage());
+                logger.log(WARNING, "Failed to initialize an optimized AES implementation: {}",
+                        e.getLocalizedMessage());
             }
         }
         try

@@ -20,13 +20,14 @@
  */
 package org.jitsi.impl.neomedia.transform;
 
+import static java.lang.System.Logger.Level.*;
+import java.lang.System.Logger;
+
 import java.util.concurrent.atomic.*;
 import java.util.function.*;
 
 import org.jitsi.service.neomedia.*;
 import org.jitsi.utils.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Extends the <tt>PacketTransformer</tt> interface with methods which allow
@@ -54,7 +55,7 @@ public abstract class SinglePacketTransformer
      * The <tt>Logger</tt> used by the <tt>SinglePacketTransformer</tt> class
      * and its instances to print debug information.
      */
-    private static final Logger logger = LoggerFactory.getLogger(SinglePacketTransformer.class);
+    private static final Logger logger = System.getLogger(SinglePacketTransformer.class.getName());
 
     /**
      * The number of exceptions caught in {@link #reverseTransform(RawPacket)}.
@@ -206,9 +207,7 @@ public abstract class SinglePacketTransformer
                         if ((exceptionCounter.get() % EXCEPTIONS_TO_LOG) == 0
                             || exceptionCounter.get() == 1)
                         {
-                            logger.error(
-                                "Failed to " + logMessage + " RawPacket(s)!",
-                                t);
+                            logger.log(ERROR, "Failed to " + logMessage + " RawPacket(s)!", t);
                         }
                         if (t instanceof Error)
                         {

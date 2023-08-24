@@ -20,14 +20,15 @@
  */
 package org.jitsi.impl.neomedia.transform.srtp;
 
+import static java.lang.System.Logger.Level.*;
+import java.lang.System.Logger;
+
 import java.security.*;
 import java.util.*;
 
 import org.jitsi.impl.neomedia.transform.*;
 import org.jitsi.service.neomedia.*;
 import org.jitsi.srtp.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * SRTCPTransformer implements PacketTransformer.
@@ -39,7 +40,7 @@ import org.slf4j.LoggerFactory;
 public class SRTCPTransformer
     extends SinglePacketTransformer
 {
-    private static final Logger logger = LoggerFactory.getLogger(SRTCPTransformer.class);
+    private static final Logger logger = System.getLogger(SRTCPTransformer.class.getName());
     private SrtpContextFactory forwardFactory;
     private SrtpContextFactory reverseFactory;
 
@@ -162,7 +163,7 @@ public class SRTCPTransformer
                 }
                 catch (GeneralSecurityException e)
                 {
-                    logger.error("Could not get context for ssrc " + ssrc, e);
+                    logger.log(ERROR, "Could not get context for ssrc " + ssrc, e);
                     return null;
                 }
                 contexts.put(ssrc, context);

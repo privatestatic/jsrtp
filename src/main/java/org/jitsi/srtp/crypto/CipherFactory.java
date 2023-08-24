@@ -15,13 +15,13 @@
  */
 package org.jitsi.srtp.crypto;
 
+import static java.lang.System.Logger.Level.*;
+import java.lang.System.Logger;
+
 import java.security.*;
 
 import java.util.*;
 import javax.crypto.*;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Factory which initializes a {@link Cipher} that is implemented by a {@link
@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
  */
 public class CipherFactory
 {
-    private static final Logger logger = LoggerFactory.getLogger(CipherFactory.class);
+    private static final Logger logger = System.getLogger(CipherFactory.class.getName());
     
     /**
      * Creates a cipher with the factory
@@ -44,8 +44,8 @@ public class CipherFactory
         throws Exception
     {
         Cipher cipher = Cipher.getInstance(transformation);
-        if (logger.isDebugEnabled())
-            logger.debug("Using '{}' to provide cipher for transformation '{}'.",
+        if (logger.isLoggable(DEBUG))
+            logger.log(DEBUG, "Using '{}' to provide cipher for transformation '{}'.",
                     Optional.ofNullable(cipher).map(Cipher::getProvider).map(Provider::getName).orElse("unknown"),
                     transformation);
         return cipher;
