@@ -26,28 +26,33 @@
         </license>
     </licenses>
 
+    <issueManagement>
+        <system>GitHub</system>
+        <url>https://github.com/privatestatic/jsrtp/issues</url>
+    </issueManagement>
+
     <properties>
         <java.version>11</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <maven-source-plugin.version>3.3.0</maven-source-plugin.version>
         <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
-        <maven-failsafe-plugin.version>3.1.2</maven-failsafe-plugin.version>
-        <maven-checkstyle-plugin.version>3.3.0</maven-checkstyle-plugin.version>
-        <com.puppycrawl.tools.checkstyle.version>10.12.2</com.puppycrawl.tools.checkstyle.version>
-        <maven-javadoc-plugin.version>3.5.0</maven-javadoc-plugin.version>
+        <maven-failsafe-plugin.version>3.2.2</maven-failsafe-plugin.version>
+        <maven-checkstyle-plugin.version>3.3.1</maven-checkstyle-plugin.version>
+        <com.puppycrawl.tools.checkstyle.version>10.12.5</com.puppycrawl.tools.checkstyle.version>
+        <maven-javadoc-plugin.version>3.6.3</maven-javadoc-plugin.version>
         <maven-deploy-plugin.version>3.1.1</maven-deploy-plugin.version>
         <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
         <maven-install-plugin.version>3.1.1</maven-install-plugin.version>
-        <jacoco-maven-plugin.version>0.8.10</jacoco-maven-plugin.version>
+        <jacoco-maven-plugin.version>0.8.11</jacoco-maven-plugin.version>
 
         <java-getopt.version>1.0.13</java-getopt.version>
-        <jakarta.xml.bind-api.version>4.0.0</jakarta.xml.bind-api.version>
-        <slf4j.version>2.0.7</slf4j.version>
-        <junit.version>5.10.0</junit.version>
+        <jakarta.xml.bind-api.version>4.0.1</jakarta.xml.bind-api.version>
+        <slf4j.version>2.0.9</slf4j.version>
+        <junit.version>5.10.1</junit.version>
         <assertj.version>3.24.2</assertj.version>
-        <spotbugs.version>4.7.3</spotbugs.version>
-        <bouncycastle.version>1.76</bouncycastle.version>
+        <spotbugs.version>4.8.2</spotbugs.version>
+        <bouncycastle.version>1.77</bouncycastle.version>
         <pkts.version>3.0.10</pkts.version>
     </properties>
 
@@ -147,6 +152,15 @@
     </dependencies>
 
     <build>
+        <resources>
+            <resource>
+                <directory>.</directory>
+                <includes>
+                    <include>LICENSE</include>
+                </includes>
+                <targetPath>META-INF</targetPath>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
