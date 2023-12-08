@@ -5,7 +5,7 @@
 
     <groupId>com.github</groupId>
     <artifactId>jsrtp</artifactId>
-    <version>0.0.2</version>
+    <version>0.0.3</version>
 
     <name>jSRTP - Java Secure RTP implementation</name>
     <description>Stripped down fork of jitsi-srtp meant to be used without further jitsi dependencies</description>
@@ -39,7 +39,7 @@
         <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
         <maven-failsafe-plugin.version>3.2.2</maven-failsafe-plugin.version>
         <maven-checkstyle-plugin.version>3.3.1</maven-checkstyle-plugin.version>
-        <com.puppycrawl.tools.checkstyle.version>10.12.5</com.puppycrawl.tools.checkstyle.version>
+        <com.puppycrawl.tools.checkstyle.version>10.12.6</com.puppycrawl.tools.checkstyle.version>
         <maven-javadoc-plugin.version>3.6.3</maven-javadoc-plugin.version>
         <maven-deploy-plugin.version>3.1.1</maven-deploy-plugin.version>
         <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
