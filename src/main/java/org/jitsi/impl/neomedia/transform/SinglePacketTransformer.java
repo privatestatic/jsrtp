@@ -207,7 +207,7 @@ public abstract class SinglePacketTransformer
                         if ((exceptionCounter.get() % EXCEPTIONS_TO_LOG) == 0
                             || exceptionCounter.get() == 1)
                         {
-                            logger.log(ERROR, "Failed to " + logMessage + " RawPacket(s)!", t);
+                            logger.log(ERROR, "Failed to {0} RawPacket(s)!\n{1}", logMessage, t);
                         }
                         if (t instanceof Error)
                         {

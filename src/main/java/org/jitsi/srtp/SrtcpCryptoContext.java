@@ -282,7 +282,7 @@ public class SrtcpCryptoContext
         {
             if (encrypting)
             {
-                logger.log(INFO, "Error encrypting SRTCP packet: {}", e.getMessage());
+                logger.log(INFO, "Error encrypting SRTCP packet: {0}", e.getMessage());
                 return SrtpErrorStatus.FAIL;
             }
             else
@@ -293,7 +293,7 @@ public class SrtcpCryptoContext
                 }
                 else
                 {
-                    logger.log(INFO, "Error decrypting SRTCP packet: {}", e.getMessage());
+                    logger.log(INFO, "Error decrypting SRTCP packet: {0}", e.getMessage());
                     return SrtpErrorStatus.FAIL;
                 }
             }
@@ -519,7 +519,7 @@ public class SrtcpCryptoContext
     private void logReplayWindow(long newIdx)
     {
         if (logger.isLoggable(DEBUG))
-            logger.log(DEBUG, "Updated replay window with {}. {}", newIdx,
+            logger.log(DEBUG, "Updated replay window with {0}. {1}", newIdx,
                     SrtpPacketUtils.formatReplayWindow(receivedIndex, replayWindow, REPLAY_WINDOW_SIZE));
     }
 

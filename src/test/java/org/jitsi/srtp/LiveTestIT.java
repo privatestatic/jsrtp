@@ -78,7 +78,7 @@ class LiveTestIT {
         File parentFile = new File(PCAP_20230801_09_20000);
         File outputFile = new File(parentFile.getParentFile(), "result.pcap");
 
-        LOGGER.log(Level.INFO, "Created new pcap file: " + outputFile);
+        LOGGER.log(Level.INFO, "Created new pcap file: {0}", outputFile);
         PcapOutputStream out = pcap.createOutputStream(new FileOutputStream(outputFile));
 
         try {

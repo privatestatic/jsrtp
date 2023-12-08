@@ -163,7 +163,7 @@ public class SRTCPTransformer
                 }
                 catch (GeneralSecurityException e)
                 {
-                    logger.log(ERROR, "Could not get context for ssrc " + ssrc, e);
+                    logger.log(ERROR, "Could not get context for ssrc {0}.\n{1}", ssrc, e);
                     return null;
                 }
                 contexts.put(ssrc, context);

@@ -65,7 +65,7 @@ public class Aes
             } 
                 catch (Exception e)
             {
-                logger.log(WARNING, "Failed to initialize an optimized AES implementation: {}",
+                logger.log(WARNING, "Failed to initialize an optimized AES implementation: {0}",
                         e.getLocalizedMessage());
             }
         }

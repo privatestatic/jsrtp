@@ -49,7 +49,7 @@ public class HmacSha1
         {
             Mac mac = Mac.getInstance("HmacSHA1");
             if (logger.isLoggable(DEBUG))
-                logger.log(DEBUG, "Using '{}' for HMAC",
+                logger.log(DEBUG, "Using {0} for HMAC",
                         Optional.ofNullable(mac).map(Mac::getProvider).map(Provider::getName).orElse("unknown"));
             return mac;
         } 

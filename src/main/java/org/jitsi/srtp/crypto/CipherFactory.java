@@ -45,7 +45,7 @@ public class CipherFactory
     {
         Cipher cipher = Cipher.getInstance(transformation);
         if (logger.isLoggable(DEBUG))
-            logger.log(DEBUG, "Using '{}' to provide cipher for transformation '{}'.",
+            logger.log(DEBUG, "Using {0} to provide cipher for transformation {1}.",
                     Optional.ofNullable(cipher).map(Cipher::getProvider).map(Provider::getName).orElse("unknown"),
                     transformation);
         return cipher;
