@@ -36,10 +36,10 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <maven-source-plugin.version>3.3.0</maven-source-plugin.version>
-        <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
-        <maven-failsafe-plugin.version>3.2.2</maven-failsafe-plugin.version>
+        <maven-compiler-plugin.version>3.12.1</maven-compiler-plugin.version>
+        <maven-failsafe-plugin.version>3.2.5</maven-failsafe-plugin.version>
         <maven-checkstyle-plugin.version>3.3.1</maven-checkstyle-plugin.version>
-        <com.puppycrawl.tools.checkstyle.version>10.12.6</com.puppycrawl.tools.checkstyle.version>
+        <com.puppycrawl.tools.checkstyle.version>10.13.0</com.puppycrawl.tools.checkstyle.version>
         <maven-javadoc-plugin.version>3.6.3</maven-javadoc-plugin.version>
         <maven-deploy-plugin.version>3.1.1</maven-deploy-plugin.version>
         <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
@@ -48,10 +48,10 @@
 
         <java-getopt.version>1.0.13</java-getopt.version>
         <jakarta.xml.bind-api.version>4.0.1</jakarta.xml.bind-api.version>
-        <slf4j.version>2.0.9</slf4j.version>
+        <slf4j.version>2.0.11</slf4j.version>
         <junit.version>5.10.1</junit.version>
-        <assertj.version>3.24.2</assertj.version>
-        <spotbugs.version>4.8.2</spotbugs.version>
+        <assertj.version>3.25.2</assertj.version>
+        <spotbugs.version>4.8.3</spotbugs.version>
         <bouncycastle.version>1.77</bouncycastle.version>
         <pkts.version>3.0.10</pkts.version>
     </properties>

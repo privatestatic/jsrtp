@@ -76,14 +76,17 @@ public class SrtpContextFactory
         int encKeyLength = srtpPolicy.getEncKeyLength();
         if (encKeyLength != srtcpPolicy.getEncKeyLength())
         {
-            throw new IllegalArgumentException("srtpPolicy.getEncKeyLength() != srtcpPolicy.getEncKeyLength()");
+            throw new IllegalArgumentException(
+                    "srtpPolicy.getEncKeyLength() {" + srtpPolicy.getEncKeyLength() + 
+                    "}!= srtcpPolicy.getEncKeyLength() {" + srtcpPolicy.getEncKeyLength() + "}");
         }
 
         if (masterKey != null)
         {
             if (masterKey.length != encKeyLength)
             {
-                throw new IllegalArgumentException("masterK.length != encKeyLength");
+                throw new IllegalArgumentException(
+                        "masterK.length {" + masterKey.length + "} != encKeyLength {" + encKeyLength + "}");
             }
 
             this.masterKey = new byte[encKeyLength];
@@ -93,7 +96,7 @@ public class SrtpContextFactory
         {
             if (encKeyLength != 0)
             {
-                throw new IllegalArgumentException("null masterK but encKeyLength != 0");
+                throw new IllegalArgumentException("null masterK but encKeyLength {" + encKeyLength + "} != 0");
             }
             this.masterKey = new byte[0];
         }
@@ -101,14 +104,17 @@ public class SrtpContextFactory
         int saltKeyLength = srtpPolicy.getSaltKeyLength();
         if (saltKeyLength != srtcpPolicy.getSaltKeyLength())
         {
-            throw new IllegalArgumentException("srtpPolicy.getSaltKeyLength() != srtcpPolicy.getSaltKeyLength()");
+            throw new IllegalArgumentException(
+                    "srtpPolicy.getSaltKeyLength() {" + srtpPolicy.getSaltKeyLength() + 
+                    "} != srtcpPolicy.getSaltKeyLength() {" + srtcpPolicy.getSaltKeyLength() + "}");
         }
 
         if (masterSalt != null)
         {
             if (masterSalt.length != saltKeyLength)
             {
-                throw new IllegalArgumentException("masterS.length != saltKeyLength");
+                throw new IllegalArgumentException(
+                        "masterS.length {" + masterSalt.length + "} != saltKeyLength {" + saltKeyLength + "}");
             }
 
             this.masterSalt = new byte[saltKeyLength];
@@ -118,7 +124,7 @@ public class SrtpContextFactory
         {
             if (saltKeyLength != 0)
             {
-                throw new IllegalArgumentException("null masterS but saltKeyLength != 0");
+                throw new IllegalArgumentException("null masterS but saltKeyLength {" + saltKeyLength + "} != 0");
             }
             this.masterSalt = new byte[0];
         }

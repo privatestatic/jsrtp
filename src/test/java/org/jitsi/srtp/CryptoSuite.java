@@ -3,7 +3,7 @@ package org.jitsi.srtp;
 import org.jitsi.impl.neomedia.transform.srtp.SRTPTransformer;
 
 public enum CryptoSuite {
-    
+
     // rfc4568
     AES_CM_128_HMAC_SHA1_80(16, 14, 2 ^ 48L, 2 ^ 31L, SrtpPolicy.AESCM_ENCRYPTION, 16, SrtpPolicy.HMACSHA1_AUTHENTICATION, 10, 10, 20, 20),
     AES_CM_128_HMAC_SHA1_32(16, 14, 2 ^ 48L, 2 ^ 31L, SrtpPolicy.AESCM_ENCRYPTION, 16, SrtpPolicy.HMACSHA1_AUTHENTICATION, 4, 10, 20, 20),
@@ -13,41 +13,40 @@ public enum CryptoSuite {
 //    SEED_CTR_128_HMAC_SHA1_80(),
 //    SEED_128_CCM_80(),
 //    SEED_128_GCM_96(),
-    
+
     // rfc6188
     AES_192_CM_HMAC_SHA1_80(24, 14, 2 ^ 31L, 2 ^ 31L, SrtpPolicy.AESCM_ENCRYPTION, 24, SrtpPolicy.HMACSHA1_AUTHENTICATION, 10, 10, 20, 20),
     AES_192_CM_HMAC_SHA1_32(24, 14, 2 ^ 31L, 2 ^ 31L, SrtpPolicy.AESCM_ENCRYPTION, 24, SrtpPolicy.HMACSHA1_AUTHENTICATION, 4, 10, 20, 20),
     AES_256_CM_HMAC_SHA1_80(32, 14, 2 ^ 31L, 2 ^ 31L, SrtpPolicy.AESCM_ENCRYPTION, 32, SrtpPolicy.HMACSHA1_AUTHENTICATION, 10, 10, 20, 20),
     AES_256_CM_HMAC_SHA1_32(32, 14, 2 ^ 31L, 2 ^ 31L, SrtpPolicy.AESCM_ENCRYPTION, 32, SrtpPolicy.HMACSHA1_AUTHENTICATION, 4, 10, 20, 20),
-    
-//    // rfc7714
-//    AEAD_AES_128_GCM(16, 12, 2 ^ 48L, 2 ^ 31L, SrtpPolicy.AESGCM_ENCRYPTION, 16, SrtpPolicy.NULL_AUTHENTICATION, 16, 16, 0, 0),
-//    AEAD_AES_256_GCM(32, 12, 2 ^ 48L, 2 ^ 31L, SrtpPolicy.AESGCM_ENCRYPTION, 12, SrtpPolicy.NULL_AUTHENTICATION, 16, 16, 0, 0),
-    
+
+    // rfc7714
+    AEAD_AES_128_GCM(16, 12, 2 ^ 48L, 2 ^ 31L, SrtpPolicy.AESGCM_ENCRYPTION, 16, SrtpPolicy.NULL_AUTHENTICATION, 16, 16, 0, 0),
+    AEAD_AES_256_GCM(32, 12, 2 ^ 48L, 2 ^ 31L, SrtpPolicy.AESGCM_ENCRYPTION, 32, SrtpPolicy.NULL_AUTHENTICATION, 16, 16, 0, 0),
+
     // incorrect identifier
     AES_CM_256_HMAC_SHA1_80(32, 14, 2 ^ 31L, 2 ^ 31L, SrtpPolicy.AESCM_ENCRYPTION, 32, SrtpPolicy.HMACSHA1_AUTHENTICATION, 10, 10, 20, 20),
     AES_CM_256_HMAC_SHA1_32(32, 14, 2 ^ 31L, 2 ^ 31L, SrtpPolicy.AESCM_ENCRYPTION, 32, SrtpPolicy.HMACSHA1_AUTHENTICATION, 10, 10, 20, 20),
     AES_CM_192_HMAC_SHA1_32(24, 14, 2 ^ 31L, 2 ^ 31L, SrtpPolicy.AESCM_ENCRYPTION, 24, SrtpPolicy.HMACSHA1_AUTHENTICATION, 4, 10, 20, 20),
     AES_CM_192_HMAC_SHA1_80(24, 14, 2 ^ 31L, 2 ^ 31L, SrtpPolicy.AESCM_ENCRYPTION, 24, SrtpPolicy.HMACSHA1_AUTHENTICATION, 10, 10, 20, 20),
-    
+
     // without authentication
     AES_CM_128(16, 14, 2 ^ 48L, 2 ^ 31L, SrtpPolicy.AESCM_ENCRYPTION, 16, SrtpPolicy.NULL_AUTHENTICATION, 0, 0, 0, 0);
-    
 
-    int masterKeyLength;
-    int masterSaltLength;
-    long maxSrtpLifeTime;
-    long maxSrtcpLifeTime;
-    int encryptionMode;
-    int encryptionKeyByteLength;
-    int authenticationMode;
-    int srtpAuthenticationTagLength;
-    int srtcpAuthenticationTagLength;
-    int srtpAuthenticationKeyLength;
-    int srtcpAuthenticationKeyLength;
+    private int masterKeyLength;
+    private int masterSaltLength;
+    private long maxSrtpLifeTime;
+    private long maxSrtcpLifeTime;
+    private int encryptionMode;
+    private int encryptionKeyByteLength;
+    private int authenticationMode;
+    private int srtpAuthenticationTagLength;
+    private int srtcpAuthenticationTagLength;
+    private int srtpAuthenticationKeyLength;
+    private int srtcpAuthenticationKeyLength;
 
-    CryptoSuite(int masterKeyByteLength, int masterSaltByteLength, long maxSrtpLifeTime, long maxSrtcpLifeTime, int aesMode,
-            int encryptionKeyByteLength, int authenticationMode, int srtpAuthenticationTagByteLength,
+    CryptoSuite(int masterKeyByteLength, int masterSaltByteLength, long maxSrtpLifeTime, long maxSrtcpLifeTime,
+            int aesMode, int encryptionKeyByteLength, int authenticationMode, int srtpAuthenticationTagByteLength,
             int srtcpAuthenticationTagByteLength, int srtpAuthenticationKeyByteLength,
             int srtcpAuthenticationKeyByteLength) {
 
