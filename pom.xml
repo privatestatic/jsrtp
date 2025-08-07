@@ -53,7 +53,7 @@
         <assertj.version>3.27.3</assertj.version>
         <spotbugs.version>4.9.3</spotbugs.version>
         <bouncycastle.version>1.81</bouncycastle.version>
-        <pkts.version>3.0.18</pkts.version>
+        <pkts.version>3.0.10</pkts.version>
     </properties>
 
     <dependencyManagement>
