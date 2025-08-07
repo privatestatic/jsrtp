@@ -66,6 +66,7 @@ public class SRTPTransformer
 
     SrtpContextFactory forwardFactory;
     SrtpContextFactory reverseFactory;
+    int startROC;
 
     /**
      * All the known SSRC's corresponding SrtpCryptoContexts
@@ -84,6 +85,18 @@ public class SRTPTransformer
     }
 
     /**
+     * Initializes a new <tt>SRTPTransformer</tt> instance.
+     *
+     * @param factory the context factory to be used by the new
+     * instance for both directions.
+     * @param startROC A user specified initial ROC value.
+     */
+    public SRTPTransformer(SrtpContextFactory factory, int startROC)
+    {
+        this(factory, factory, startROC);
+    }
+
+    /**
      * Constructs a SRTPTransformer object.
      *
      * @param forwardFactory The associated context factory for forward
@@ -98,6 +111,26 @@ public class SRTPTransformer
         this.forwardFactory = forwardFactory;
         this.reverseFactory = reverseFactory;
         this.contexts = new HashMap<>();
+        this.startROC = 0;
+    }
+
+    /**
+     * Constructs a SRTPTransformer object.
+     *
+     * @param forwardFactory The associated context factory for forward
+     *            transformations.
+     * @param reverseFactory The associated context factory for reverse
+     *            transformations.
+     * @param startROC A user specified initial ROC value.
+     */
+    public SRTPTransformer(
+            SrtpContextFactory forwardFactory,
+            SrtpContextFactory reverseFactory, int startROC)
+    {
+        this.forwardFactory = forwardFactory;
+        this.reverseFactory = reverseFactory;
+        this.contexts = new HashMap<>();
+        this.startROC = startROC;
     }
 
     /**
@@ -155,8 +188,7 @@ public class SRTPTransformer
 
     private SrtpCryptoContext getContext(
             int ssrc,
-            SrtpContextFactory engine,
-            int deriveSrtpKeysIndex)
+            SrtpContextFactory engine)
     {
         SrtpCryptoContext context;
 
@@ -167,7 +199,7 @@ public class SRTPTransformer
             {
                 try
                 {
-                    context = engine.deriveContext(ssrc, 0);
+                    context = engine.deriveContext(ssrc, startROC);
                 }
                 catch (GeneralSecurityException e)
                 {
@@ -199,8 +231,7 @@ public class SRTPTransformer
         SrtpCryptoContext context
             = getContext(
                     pkt.getSSRC(),
-                    reverseFactory,
-                    pkt.getSequenceNumber());
+                    reverseFactory);
 
         boolean skipDecryption =
             (pkt.getFlags() & ((1 << 1) | (1 << 2))) != 0;
@@ -234,7 +265,7 @@ public class SRTPTransformer
     public RawPacket transform(RawPacket pkt)
     {
         SrtpCryptoContext context
-            = getContext(pkt.getSSRC(), forwardFactory, 0);
+            = getContext(pkt.getSSRC(), forwardFactory);
 
         if (context == null)
             return null;

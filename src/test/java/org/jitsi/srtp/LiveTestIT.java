@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.System.Logger;
@@ -27,6 +26,8 @@ class LiveTestIT {
 
     private static final String PCAP_20000_AES_CM_128_HMAC_SHA1_80 = Objects
             .requireNonNull(LiveTestIT.class.getResource("/20000_AES_CM_128_HMAC_SHA1_80.pcap")).getFile();
+    private static final String PCAP_20002_AES_CM_128_HMAC_SHA1_80_ONLY_ROC_13 = Objects
+            .requireNonNull(LiveTestIT.class.getResource("/20002_AES_CM_128_HMAC_SHA1_80_ONLY_ROC_13.pcap")).getFile();
     private static final String PCAP_20000_AEAD_AES_256_GCM = Objects
             .requireNonNull(LiveTestIT.class.getResource("/20000_AEAD_AES_256_GCM.pcap")).getFile();
 
@@ -69,7 +70,7 @@ class LiveTestIT {
     }
 
     @Test
-    void decryptWriteAndEncryptWholeStream_AES_CM_128_HMAC_SHA1_80() throws FileNotFoundException, IOException {
+    void decryptWriteAndEncryptWholeStream_AES_CM_128_HMAC_SHA1_80() throws IOException {
         byte[] decodedKeySaltBytes = Base64.getDecoder().decode("q3BDq3ieE2aYlpPinNQClCkOWowRTO4SuQalqJgv");
         byte[] key = Arrays.copyOfRange(decodedKeySaltBytes, 0,
                 CryptoSuite.AES_CM_128_HMAC_SHA1_80.getMasterKeyLength());
@@ -77,6 +78,8 @@ class LiveTestIT {
                 decodedKeySaltBytes.length);
 
         SRTPTransformer packetTransformer = CryptoSuite.AES_CM_128_HMAC_SHA1_80.createSrtpTransformer(false, key, salt);
+        SRTPTransformer encPacketTransformer = CryptoSuite.AES_CM_128_HMAC_SHA1_80.createSrtpTransformer(true, key,
+                salt);
 
         Pcap pcap = Pcap.openStream(PCAP_20000_AES_CM_128_HMAC_SHA1_80);
         File parentFile = new File(PCAP_20000_AES_CM_128_HMAC_SHA1_80);
@@ -101,8 +104,6 @@ class LiveTestIT {
                 assertThat(Arrays.equals(originalBytes, decrypted.getBuffer())).isFalse();
 
                 // encrypt
-                SRTPTransformer encPacketTransformer = CryptoSuite.AES_CM_128_HMAC_SHA1_80.createSrtpTransformer(true,
-                        key, salt);
                 RawPacket reencrypted = encPacketTransformer.transform(decrypted);
                 Assertions.assertNotNull(reencrypted,
                         "Couldn't reencrypt packet with sequence number " + pkt.getSequenceNumber());
@@ -118,14 +119,15 @@ class LiveTestIT {
     }
 
     @Test
-    void decryptWriteAndEncryptWholeStream_AEAD_AES_256_GCM() throws FileNotFoundException, IOException {
+    void decryptWriteAndEncryptWholeStream_AEAD_AES_256_GCM() throws IOException {
         byte[] decodedKeySaltBytes = Base64.getDecoder()
                 .decode("TyBfADxvPN8/JWahU4OFVGksaFwL2m6t81PE7EtnaFZoNpx3+fdq/65a3uk=");
         byte[] key = Arrays.copyOfRange(decodedKeySaltBytes, 0, CryptoSuite.AEAD_AES_256_GCM.getMasterKeyLength());
         byte[] salt = Arrays.copyOfRange(decodedKeySaltBytes, CryptoSuite.AEAD_AES_256_GCM.getMasterKeyLength(),
                 decodedKeySaltBytes.length);
 
-        SRTPTransformer packetTransformer = CryptoSuite.AEAD_AES_256_GCM.createSrtpTransformer(false, key, salt);
+        SRTPTransformer packetTransformer = CryptoSuite.AEAD_AES_256_GCM.createSrtpTransformer(false, key, salt, 0);
+        SRTPTransformer encPacketTransformer = CryptoSuite.AEAD_AES_256_GCM.createSrtpTransformer(true, key, salt);
 
         Pcap pcap = Pcap.openStream(PCAP_20000_AEAD_AES_256_GCM);
         File parentFile = new File(PCAP_20000_AEAD_AES_256_GCM);
@@ -150,8 +152,6 @@ class LiveTestIT {
                 assertThat(Arrays.equals(originalBytes, decrypted.getBuffer())).isFalse();
 
                 // encrypt
-                SRTPTransformer encPacketTransformer = CryptoSuite.AEAD_AES_256_GCM.createSrtpTransformer(true, key,
-                        salt);
                 RawPacket reencrypted = encPacketTransformer.transform(decrypted);
                 Assertions.assertNotNull(reencrypted,
                         "Couldn't reencrypt packet with sequence number " + pkt.getSequenceNumber());
@@ -159,6 +159,56 @@ class LiveTestIT {
 
                 return decryptedBytes;
             }, out, CryptoSuite.AEAD_AES_256_GCM.getSrtcpAuthenticationTagLength()));
+        } finally {
+            out.flush();
+            out.close();
+            pcap.close();
+        }
+    }
+
+    @Test
+    void decryptWriteAndEncryptWholeStream_AES_CM_128_HMAC_SHA1_80_ONLY_ROC_13() throws IOException {
+        byte[] decodedKeySaltBytes = Base64.getDecoder().decode("BfVE5CD1c0OYzLU526/wr/94CXU7AB33nU3EBam+");
+        byte[] key = Arrays.copyOfRange(decodedKeySaltBytes, 0,
+                CryptoSuite.AES_CM_128_HMAC_SHA1_80.getMasterKeyLength());
+        byte[] salt = Arrays.copyOfRange(decodedKeySaltBytes, CryptoSuite.AES_CM_128_HMAC_SHA1_80.getMasterKeyLength(),
+                decodedKeySaltBytes.length);
+
+        SRTPTransformer packetTransformer = CryptoSuite.AES_CM_128_HMAC_SHA1_80.createSrtpTransformer(false, key, salt,
+                13);
+        SRTPTransformer encPacketTransformer = CryptoSuite.AES_CM_128_HMAC_SHA1_80.createSrtpTransformer(true, key,
+                salt, 13);
+
+        Pcap pcap = Pcap.openStream(PCAP_20002_AES_CM_128_HMAC_SHA1_80_ONLY_ROC_13);
+        File parentFile = new File(PCAP_20002_AES_CM_128_HMAC_SHA1_80_ONLY_ROC_13);
+        File outputFile = new File(parentFile.getParentFile(), "result_AES_CM_128_HMAC_SHA1_80_ONLY_ROC_13.pcap");
+
+        LOGGER.log(Level.INFO, "Created new pcap file: {0}", outputFile);
+        PcapOutputStream out = pcap.createOutputStream(new FileOutputStream(outputFile));
+
+        try {
+            pcap.loop(new UdpPayloadHandler(d -> {
+                RawPacket pkt = new RawPacket(d, 0, d.length);
+                byte[] originalBytes = Arrays.copyOf(pkt.getBuffer(), pkt.getBuffer().length);
+
+                // decrypt
+                RawPacket decrypted = packetTransformer.reverseTransform(pkt);
+                Assertions.assertNotNull(decrypted,
+                        "Couldn't decrypt packet with sequence number " + pkt.getSequenceNumber() + ".");
+                Assertions.assertNotNull(decrypted.getBuffer());
+                byte[] decryptedBytes = Arrays.copyOf(decrypted.getBuffer(), decrypted.getBuffer().length);
+                Assertions.assertNotNull(decrypted,
+                        "Couldn't decrypt packet with sequence number " + pkt.getSequenceNumber());
+                assertThat(Arrays.equals(originalBytes, decrypted.getBuffer())).isFalse();
+
+                // encrypt
+                RawPacket reencrypted = encPacketTransformer.transform(decrypted);
+                Assertions.assertNotNull(reencrypted,
+                        "Couldn't reencrypt packet with sequence number " + pkt.getSequenceNumber());
+                assertThat(Arrays.equals(originalBytes, reencrypted.getBuffer())).isTrue();
+
+                return decryptedBytes;
+            }, out, CryptoSuite.AES_CM_128_HMAC_SHA1_80.getSrtcpAuthenticationTagLength()));
         } finally {
             out.flush();
             out.close();

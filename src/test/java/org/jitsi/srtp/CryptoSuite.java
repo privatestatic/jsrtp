@@ -120,4 +120,8 @@ public enum CryptoSuite {
     public SRTPTransformer createSrtpTransformer(boolean sender, byte[] key, byte[] salt) {
         return new SRTPTransformer(createSrtpContextFactory(sender, key, salt));
     }
+
+    public SRTPTransformer createSrtpTransformer(boolean sender, byte[] key, byte[] salt, int startROC) {
+        return new SRTPTransformer(createSrtpContextFactory(sender, key, salt), startROC);
+    }
 }
