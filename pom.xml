@@ -31,28 +31,39 @@
         <url>https://github.com/privatestatic/jsrtp/issues</url>
     </issueManagement>
 
+    <developers>
+        <developer>
+            <id>privatestatic</id>
+            <name>privatestatic</name>
+            <url>https://github.com/privatestatic</url>
+        </developer>
+    </developers>
+
     <properties>
         <java.version>11</java.version>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <maven-source-plugin.version>3.3.1</maven-source-plugin.version>
-        <maven-compiler-plugin.version>3.14.0</maven-compiler-plugin.version>
-        <maven-failsafe-plugin.version>3.5.3</maven-failsafe-plugin.version>
+        <maven-source-plugin.version>3.4.0</maven-source-plugin.version>
+        <maven-compiler-plugin.version>3.14.1</maven-compiler-plugin.version>
+        <maven-surefire-plugin.version>3.5.4</maven-surefire-plugin.version>
+        <maven-failsafe-plugin.version>3.5.4</maven-failsafe-plugin.version>
         <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
         <com.puppycrawl.tools.checkstyle.version>10.26.1</com.puppycrawl.tools.checkstyle.version>
-        <maven-javadoc-plugin.version>3.11.2</maven-javadoc-plugin.version>
+        <maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
         <maven-deploy-plugin.version>3.1.4</maven-deploy-plugin.version>
-        <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
+        <maven-resources-plugin.version>3.4.0</maven-resources-plugin.version>
         <maven-install-plugin.version>3.1.4</maven-install-plugin.version>
-        <jacoco-maven-plugin.version>0.8.13</jacoco-maven-plugin.version>
+        <jacoco-maven-plugin.version>0.8.14</jacoco-maven-plugin.version>
 
         <java-getopt.version>1.0.13</java-getopt.version>
-        <jakarta.xml.bind-api.version>4.0.2</jakarta.xml.bind-api.version>
+        <jakarta.xml.bind-api.version>4.0.4</jakarta.xml.bind-api.version>
         <slf4j.version>2.0.17</slf4j.version>
-        <junit.version>5.13.4</junit.version>
-        <assertj.version>3.27.3</assertj.version>
-        <spotbugs.version>4.9.3</spotbugs.version>
-        <bouncycastle.version>1.81</bouncycastle.version>
+        <junit.version>5.14.2</junit.version>
+        <assertj.version>3.27.7</assertj.version>
+        <spotbugs.version>4.9.8</spotbugs.version>
+        <bouncycastle.version>1.83</bouncycastle.version>
         <pkts.version>3.0.10</pkts.version>
     </properties>
 
@@ -183,6 +194,11 @@
             </resource>
         </resources>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${maven-surefire-plugin.version}</version>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
