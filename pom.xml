@@ -5,7 +5,7 @@
 
     <groupId>com.github</groupId>
     <artifactId>jsrtp</artifactId>
-    <version>0.0.7</version>
+    <version>0.0.8</version>
 
     <name>jSRTP - Java Secure RTP implementation</name>
     <description>Stripped down fork of jitsi-srtp meant to be used without further jitsi dependencies</description>
