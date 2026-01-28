@@ -93,7 +93,7 @@ jobs:
       - name: Commit release version
         run: |
           git add pom.xml
-          git commit -m "Release version ${{ github.event.inputs.version }}"
+          git diff --staged --quiet || git commit -m "Release version ${{ github.event.inputs.version }}"
           git tag -a v${{ github.event.inputs.version }} -m "Release ${{ github.event.inputs.version }}"
 
       - name: Set next development version
@@ -102,7 +102,7 @@ jobs:
       - name: Commit next development version
         run: |
           git add pom.xml
-          git commit -m "Prepare for next development iteration ${{ github.event.inputs.nextVersion }}-SNAPSHOT"
+          git diff --staged --quiet || git commit -m "Prepare for next development iteration ${{ github.event.inputs.nextVersion }}-SNAPSHOT"
 
       - name: Push changes and tags
         run: |
@@ -119,3 +119,12 @@ jobs:
             target/*.jar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  publish:
+    needs: release
+    uses: ./.github/workflows/maven-publish.yml
+    with:
+      ref: v${{ github.event.inputs.version }}
+    permissions:
+      contents: read
+      packages: write
