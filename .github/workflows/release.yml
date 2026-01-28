@@ -37,13 +37,15 @@ jobs:
     steps:
       - name: Validate version format
         run: |
-          if ! echo "${{ github.event.inputs.version }}" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+)?$'; then
-            echo "❌ Invalid version format: '${{ github.event.inputs.version }}'"
+          VERSION="$(echo "${{ github.event.inputs.version }}" | xargs)"
+          NEXT_VERSION="$(echo "${{ github.event.inputs.nextVersion }}" | xargs)"
+          if ! echo "$VERSION" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+)?$'; then
+            echo "❌ Invalid version format: '$VERSION'"
             echo "Expected format: X.Y.Z or X.Y.Z-suffix (e.g., 1.0.0 or 1.0.0-RC1)"
             exit 1
           fi
-          if ! echo "${{ github.event.inputs.nextVersion }}" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+)?$'; then
-            echo "❌ Invalid next version format: '${{ github.event.inputs.nextVersion }}'"
+          if ! echo "$NEXT_VERSION" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+)?$'; then
+            echo "❌ Invalid next version format: '$NEXT_VERSION'"
             echo "Expected format: X.Y.Z or X.Y.Z-suffix (e.g., 1.1.0 or 2.0.0-RC1)"
             exit 1
           fi
