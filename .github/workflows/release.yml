@@ -18,6 +18,7 @@ jobs:
   # Pre-check job to provide clear error message for wrong branch
   check-branch:
     runs-on: ubuntu-latest
+    permissions: {}
     steps:
       - name: Check branch
         if: github.ref != 'refs/heads/main'
