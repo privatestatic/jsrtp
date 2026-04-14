@@ -11,3 +11,4 @@ cmake-*/
 resources/sources_*.list
 .sdkmanrc
 .vscode/
+*.code-workspace
