@@ -47,24 +47,24 @@
 
         <maven-source-plugin.version>3.4.0</maven-source-plugin.version>
         <maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
-        <maven-surefire-plugin.version>3.5.5</maven-surefire-plugin.version>
-        <maven-failsafe-plugin.version>3.5.5</maven-failsafe-plugin.version>
+        <maven-surefire-plugin.version>3.5.6</maven-surefire-plugin.version>
+        <maven-failsafe-plugin.version>3.5.6</maven-failsafe-plugin.version>
         <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
-        <com.puppycrawl.tools.checkstyle.version>10.26.1</com.puppycrawl.tools.checkstyle.version>
+        <com.puppycrawl.tools.checkstyle.version>13.8.0</com.puppycrawl.tools.checkstyle.version>
         <maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
         <maven-deploy-plugin.version>3.1.4</maven-deploy-plugin.version>
         <maven-resources-plugin.version>3.5.0</maven-resources-plugin.version>
         <maven-install-plugin.version>3.1.4</maven-install-plugin.version>
-        <jacoco-maven-plugin.version>0.8.14</jacoco-maven-plugin.version>
+        <jacoco-maven-plugin.version>0.8.15</jacoco-maven-plugin.version>
 
         <java-getopt.version>1.0.13</java-getopt.version>
         <jakarta.xml.bind-api.version>4.0.5</jakarta.xml.bind-api.version>
-        <slf4j.version>2.0.17</slf4j.version>
-        <junit.version>5.14.3</junit.version>
+        <slf4j.version>2.0.18</slf4j.version>
+        <junit.version>6.1.1</junit.version>
         <assertj.version>3.27.7</assertj.version>
-        <spotbugs.version>4.9.8</spotbugs.version>
-        <bouncycastle.version>1.83</bouncycastle.version>
-        <pkts.version>3.0.10</pkts.version>
+        <spotbugs.version>4.10.3</spotbugs.version>
+        <bouncycastle.version>1.84</bouncycastle.version>
+        <pkts.version>3.0.18</pkts.version>
     </properties>
 
     <dependencyManagement>
