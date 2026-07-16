@@ -1,0 +1,76 @@
+# Please see the documentation for all configuration options:
+# https://docs.github.com/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+
+version: 2
+updates:
+  - package-ecosystem: "maven"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "Europe/Berlin"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "java11"
+    commit-message:
+      prefix: "deps"
+      include: "scope"
+
+    # Globally avoid major bumps (often require newer Java)
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-major"
+
+      # Keep JUnit on 5.x (JUnit 6 requires Java 17)
+      - dependency-name: "org.junit.jupiter:*"
+        versions:
+          - ">=6.0.0"
+      - dependency-name: "org.junit.platform:*"
+        versions:
+          - ">=2.0.0"
+      - dependency-name: "org.junit.vintage:*"
+        versions:
+          - ">=6.0.0"
+      - dependency-name: "org.junit:*"
+        versions:
+          - ">=6.0.0"
+
+      # Keep pkts on 3.0.10-compatible line (newer requires Java 17)
+      - dependency-name: "io.pkts:*"
+        versions:
+          - ">=3.0.11"
+
+      # Keep Checkstyle on 10.x (13.x requires Java 21)
+      - dependency-name: "com.puppycrawl.tools:checkstyle"
+        versions:
+          - ">=11.0.0"
+
+    groups:
+      maven-patch-and-minor:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:30"
+      timezone: "Europe/Berlin"
+    open-pull-requests-limit: 3
+    labels:
+      - "dependencies"
+      - "github-actions"
+    commit-message:
+      prefix: "ci"
+      include: "scope"
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-major"
