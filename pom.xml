@@ -60,10 +60,10 @@
         <java-getopt.version>1.0.13</java-getopt.version>
         <jakarta.xml.bind-api.version>4.0.5</jakarta.xml.bind-api.version>
         <slf4j.version>2.0.18</slf4j.version>
-        <junit.version>5.12.2</junit.version>
+        <junit.version>5.14.4</junit.version>
         <assertj.version>3.27.7</assertj.version>
         <spotbugs.version>4.10.3</spotbugs.version>
-        <bouncycastle.version>1.84</bouncycastle.version>
+        <bouncycastle.version>1.85</bouncycastle.version>
         <pkts.version>3.0.10</pkts.version>
     </properties>
 
