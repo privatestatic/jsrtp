@@ -62,8 +62,8 @@
         <slf4j.version>2.0.18</slf4j.version>
         <junit.version>5.14.4</junit.version>
         <assertj.version>3.27.7</assertj.version>
-        <spotbugs.version>4.10.3</spotbugs.version>
-        <bouncycastle.version>1.85</bouncycastle.version>
+        <spotbugs.version>4.10.4</spotbugs.version>
+        <bouncycastle.version>1.85.2</bouncycastle.version>
         <pkts.version>3.0.10</pkts.version>
     </properties>
 
