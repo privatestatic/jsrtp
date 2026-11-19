@@ -51,6 +51,26 @@ class LiveTestIT {
     }
 
     @Test
+    void decryptSinglePacket_AEAD_AES_256_GCM() {
+        byte[] decodedKeySaltBytes = Base64.getDecoder().decode("wTD/wm8qMOiqYgWA61dyDswfUWMQKqS3/i2uCeUQ3xh9saW2nG55IDh3Mnk=");
+        byte[] key = Arrays.copyOfRange(decodedKeySaltBytes, 0, CryptoSuite.AEAD_AES_256_GCM.getMasterKeyLength());
+        byte[] salt = Arrays.copyOfRange(decodedKeySaltBytes, CryptoSuite.AEAD_AES_256_GCM.getMasterKeyLength(), decodedKeySaltBytes.length);
+        // The packet carries 20 ms of PCMU (PT 0) silence: 160 bytes of 0xFF.
+        byte[] expectedDecryptedPayloadBytes = new byte[160];
+        Arrays.fill(expectedDecryptedPayloadBytes, (byte) 0xFF);
+
+        SRTPTransformer packetTransformer = CryptoSuite.AEAD_AES_256_GCM.createSrtpTransformer(false, key, salt);
+
+        byte[] data = DatatypeConverter.parseHexBinary(
+                "80009503d99462855c819da76794574316b0c86032f6f0442c4c1205d2aac548c28caaa74af343ea8204df819e9abd1cde1576ca938570db164e29669daa5cd570a1c5082da62d6d9846cc4c20c38a32f74fe0926c93ce76969e756e852a865bedf27f7eb8459b4ae1e6aa51244da2c3f29a9749bc7a35f51610cd2635026bf75e618cc5cc2d9464e0fd954df23bb0a66a6ee1c55d25062b653808bdd886f9b8247d978de16a49c23a5db9b8dcdf1988edc52ebd24652b2c9b2ebb53");
+        RawPacket pkt = new RawPacket(data, 0, data.length);
+
+        RawPacket decrypted = packetTransformer.reverseTransform(pkt);
+        Assertions.assertNotNull(decrypted, "Couldn't decrypt packet with sequence number " + pkt.getSequenceNumber());
+        assertThat(Arrays.equals(expectedDecryptedPayloadBytes, decrypted.getPayload())).isTrue();
+    }
+
+    @Test
     void encryptSinglePacket_AES_CM_128_HMAC_SHA1_80() {
         byte[] decodedKeySaltBytes = Base64.getDecoder().decode("q3BDq3ieE2aYlpPinNQClCkOWowRTO4SuQalqJgv");
         byte[] key = Arrays.copyOfRange(decodedKeySaltBytes, 0, CryptoSuite.AES_CM_128_HMAC_SHA1_80.getMasterKeyLength());
@@ -213,6 +233,157 @@ class LiveTestIT {
             out.flush();
             out.close();
             pcap.close();
+        }
+    }
+
+    /**
+     * Writes a single UDP/RTP packet to a PCAP file.
+     * The packet is wrapped in Ethernet, IPv4, and UDP headers.
+     *
+     * @param packetData the raw RTP packet data (without UDP/IP/Ethernet headers)
+     * @param outputFile the file to write the PCAP to
+     * @throws IOException if an I/O error occurs
+     */
+    public static void writePacketToPcap(byte[] packetData, File outputFile) throws IOException {
+        writePacketToPcap(packetData, outputFile, 5004, 5004);
+    }
+
+    /**
+     * Writes a single UDP/RTP packet to a PCAP file.
+     * The packet is wrapped in Ethernet, IPv4, and UDP headers.
+     *
+     * @param packetData the raw RTP packet data (without UDP/IP/Ethernet headers)
+     * @param outputFile the file to write the PCAP to
+     * @param srcPort    the source UDP port
+     * @param dstPort    the destination UDP port
+     * @throws IOException if an I/O error occurs
+     */
+    public static void writePacketToPcap(byte[] packetData, File outputFile, int srcPort, int dstPort) throws IOException {
+        try (FileOutputStream fos = new FileOutputStream(outputFile)) {
+            // PCAP Global Header (24 bytes)
+            // Magic number (little-endian)
+            fos.write(new byte[]{(byte) 0xd4, (byte) 0xc3, (byte) 0xb2, (byte) 0xa1});
+            // Version major (2)
+            fos.write(new byte[]{0x02, 0x00});
+            // Version minor (4)
+            fos.write(new byte[]{0x04, 0x00});
+            // Thiszone (GMT to local correction) - 4 bytes
+            fos.write(new byte[]{0x00, 0x00, 0x00, 0x00});
+            // Sigfigs (accuracy of timestamps) - 4 bytes
+            fos.write(new byte[]{0x00, 0x00, 0x00, 0x00});
+            // Snaplen (max length of captured packets) - 4 bytes (65535)
+            fos.write(new byte[]{(byte) 0xff, (byte) 0xff, 0x00, 0x00});
+            // Network (data link type) - 4 bytes (1 = Ethernet)
+            fos.write(new byte[]{0x01, 0x00, 0x00, 0x00});
+
+            // Build the full packet: Ethernet + IP + UDP + RTP payload
+            int udpLength = 8 + packetData.length;
+            int ipLength = 20 + udpLength;
+            int totalLength = 14 + ipLength; // Ethernet header + IP packet
+
+            byte[] fullPacket = new byte[totalLength];
+            int offset = 0;
+
+            // Ethernet Header (14 bytes)
+            // Destination MAC (6 bytes) - broadcast
+            System.arraycopy(new byte[]{(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff}, 0, fullPacket, offset, 6);
+            offset += 6;
+            // Source MAC (6 bytes) - dummy
+            System.arraycopy(new byte[]{0x00, 0x00, 0x00, 0x00, 0x00, 0x00}, 0, fullPacket, offset, 6);
+            offset += 6;
+            // EtherType (2 bytes) - IPv4 (0x0800)
+            fullPacket[offset++] = 0x08;
+            fullPacket[offset++] = 0x00;
+
+            // IPv4 Header (20 bytes, no options)
+            fullPacket[offset++] = 0x45; // Version (4) + IHL (5)
+            fullPacket[offset++] = 0x00; // DSCP + ECN
+            fullPacket[offset++] = (byte) ((ipLength >> 8) & 0xff); // Total length (high byte)
+            fullPacket[offset++] = (byte) (ipLength & 0xff); // Total length (low byte)
+            fullPacket[offset++] = 0x00; // Identification (high)
+            fullPacket[offset++] = 0x00; // Identification (low)
+            fullPacket[offset++] = 0x40; // Flags (Don't Fragment) + Fragment offset (high)
+            fullPacket[offset++] = 0x00; // Fragment offset (low)
+            fullPacket[offset++] = 0x40; // TTL (64)
+            fullPacket[offset++] = 0x11; // Protocol (17 = UDP)
+            fullPacket[offset++] = 0x00; // Header checksum (high) - will be calculated
+            fullPacket[offset++] = 0x00; // Header checksum (low)
+            // Source IP (127.0.0.1)
+            fullPacket[offset++] = 127;
+            fullPacket[offset++] = 0;
+            fullPacket[offset++] = 0;
+            fullPacket[offset++] = 1;
+            // Destination IP (127.0.0.1)
+            fullPacket[offset++] = 127;
+            fullPacket[offset++] = 0;
+            fullPacket[offset++] = 0;
+            fullPacket[offset++] = 1;
+
+            // Calculate IP header checksum
+            int ipHeaderStart = 14;
+            int checksum = 0;
+            for (int i = 0; i < 20; i += 2) {
+                int word = ((fullPacket[ipHeaderStart + i] & 0xff) << 8) | (fullPacket[ipHeaderStart + i + 1] & 0xff);
+                checksum += word;
+            }
+            while ((checksum >> 16) != 0) {
+                checksum = (checksum & 0xffff) + (checksum >> 16);
+            }
+            checksum = ~checksum & 0xffff;
+            fullPacket[ipHeaderStart + 10] = (byte) ((checksum >> 8) & 0xff);
+            fullPacket[ipHeaderStart + 11] = (byte) (checksum & 0xff);
+
+            // UDP Header (8 bytes)
+            fullPacket[offset++] = (byte) ((srcPort >> 8) & 0xff); // Source port (high)
+            fullPacket[offset++] = (byte) (srcPort & 0xff); // Source port (low)
+            fullPacket[offset++] = (byte) ((dstPort >> 8) & 0xff); // Destination port (high)
+            fullPacket[offset++] = (byte) (dstPort & 0xff); // Destination port (low)
+            fullPacket[offset++] = (byte) ((udpLength >> 8) & 0xff); // UDP length (high)
+            fullPacket[offset++] = (byte) (udpLength & 0xff); // UDP length (low)
+            fullPacket[offset++] = 0x00; // UDP checksum (high) - optional in IPv4
+            fullPacket[offset++] = 0x00; // UDP checksum (low)
+
+            // RTP Payload
+            System.arraycopy(packetData, 0, fullPacket, offset, packetData.length);
+
+            // PCAP Packet Header (16 bytes)
+            long currentTime = System.currentTimeMillis();
+            int seconds = (int) (currentTime / 1000);
+            int microseconds = (int) ((currentTime % 1000) * 1000);
+
+            // Timestamp seconds (little-endian)
+            fos.write(new byte[]{
+                    (byte) (seconds & 0xff),
+                    (byte) ((seconds >> 8) & 0xff),
+                    (byte) ((seconds >> 16) & 0xff),
+                    (byte) ((seconds >> 24) & 0xff)
+            });
+            // Timestamp microseconds (little-endian)
+            fos.write(new byte[]{
+                    (byte) (microseconds & 0xff),
+                    (byte) ((microseconds >> 8) & 0xff),
+                    (byte) ((microseconds >> 16) & 0xff),
+                    (byte) ((microseconds >> 24) & 0xff)
+            });
+            // Captured length (little-endian)
+            fos.write(new byte[]{
+                    (byte) (totalLength & 0xff),
+                    (byte) ((totalLength >> 8) & 0xff),
+                    (byte) ((totalLength >> 16) & 0xff),
+                    (byte) ((totalLength >> 24) & 0xff)
+            });
+            // Original length (little-endian)
+            fos.write(new byte[]{
+                    (byte) (totalLength & 0xff),
+                    (byte) ((totalLength >> 8) & 0xff),
+                    (byte) ((totalLength >> 16) & 0xff),
+                    (byte) ((totalLength >> 24) & 0xff)
+            });
+
+            // Write the packet data
+            fos.write(fullPacket);
+
+            LOGGER.log(Level.INFO, "Wrote single packet to PCAP file: {0}", outputFile.getAbsolutePath());
         }
     }
 }
