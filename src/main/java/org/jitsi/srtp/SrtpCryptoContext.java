@@ -824,6 +824,8 @@ public class SrtpCryptoContext
      * (RTPManager managed transportation) instead.
      *
      * @param pkt the RTP packet that is going to be sent out
+     * @return {@link SrtpErrorStatus#OK} if the packet was transformed. With any other status, and when an exception
+     * is thrown, the contents of the packet are not specified, and it must not be sent.
      */
     public synchronized SrtpErrorStatus transformPacket(ByteArrayBuffer pkt)
         throws GeneralSecurityException
@@ -832,6 +834,7 @@ public class SrtpCryptoContext
         {
             throw new IllegalStateException("transformPacket called on SRTP receiver");
         }
+
         int seqNo = SrtpPacketUtils.getSequenceNumber(pkt);
 
         if (!seqNumSet)
@@ -858,6 +861,11 @@ public class SrtpCryptoContext
             insertZeroLengthHeader(pkt);
         }
 
+        /* The authentication tag is written after the packet: by the cipher for AES-GCM, which does not grow the
+         * buffer, and appended for HMAC. Grow the buffer for it in one step. This comes after the header extension
+         * is inserted, which makes the packet longer and can use room after it. */
+        pkt.grow(policy.getAuthTagLength());
+
         boolean useCryptex = useCryptex(pkt, true);
 
         if (useCryptex)
@@ -874,13 +882,15 @@ public class SrtpCryptoContext
             break;
 
         case SrtpPolicy.AESGCM_ENCRYPTION:
-            processPacketAesGcm(pkt, true, useCryptex, false);
+            /* Return the failure instead of reporting OK. */
+            if ((err = processPacketAesGcm(pkt, true, useCryptex, false)) != SrtpErrorStatus.OK)
+                return err;
             break;
 
         // Encrypt the packet using F8 Mode encryption.
         case SrtpPolicy.AESF8_ENCRYPTION:
         case SrtpPolicy.TWOFISHF8_ENCRYPTION:   
-            processPacketAesF8(pkt, true);
+            processPacketAesF8(pkt, useCryptex);
             break;
         }
 

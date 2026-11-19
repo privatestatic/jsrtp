@@ -206,7 +206,7 @@ public class SRTCPTransformer
      * Encrypts a SRTCP packet
      *
      * @param pkt plain SRTCP packet to be encrypted
-     * @return encrypted SRTCP packet
+     * @return encrypted SRTCP packet, or <tt>null</tt> if the packet could not be encrypted and must not be sent
      */
     @Override
     public RawPacket transform(RawPacket pkt)
@@ -217,8 +217,7 @@ public class SRTCPTransformer
         {
             try
             {
-                context.transformPacket(pkt);
-                return pkt;
+                return context.transformPacket(pkt) == SrtpErrorStatus.OK ? pkt : null;
             }
             catch (GeneralSecurityException e)
             {
