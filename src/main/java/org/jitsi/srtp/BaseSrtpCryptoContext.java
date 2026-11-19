@@ -184,10 +184,11 @@ public class BaseSrtpCryptoContext
             cipher = new SrtpCipherCtr(Cipher.getInstance("Twofish/CTR/NoPadding"));
             break;
         case SrtpPolicy.NULL_ENCRYPTION:
-        default:
             cipher = null;
             ivSize = 0;
             break;
+        default:
+            throw new IllegalArgumentException("Unknown encryption type " + policy.getEncType());
         }
 
         ivStore = new byte[ivSize];
@@ -204,9 +205,10 @@ public class BaseSrtpCryptoContext
             break;
 
         case SrtpPolicy.NULL_AUTHENTICATION:
-        default:
             localMac = null;
             break;
+        default:
+            throw new IllegalArgumentException("Unknown authentication type " + policy.getAuthType());
         }
         this.mac = localMac;
     }

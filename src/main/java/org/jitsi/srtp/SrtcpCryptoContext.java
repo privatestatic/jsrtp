@@ -198,7 +198,8 @@ public class SrtcpCryptoContext
                 pkt.getBuffer(), pkt.getOffset() + payloadOffset, payloadLength);
     }
 
-    private SrtpErrorStatus processPacketAesGcm(ByteArrayBuffer pkt, int index,
+    /* Package-private for tests. */
+    SrtpErrorStatus processPacketAesGcm(ByteArrayBuffer pkt, int index,
         boolean authenticationOnly, boolean encrypting)
     {
         int ssrc = SrtcpPacketUtils.getSenderSsrc(pkt);
@@ -273,7 +274,7 @@ public class SrtcpCryptoContext
                 cipher.processAAD(rbStore, 0, 4);
 
                 int processLen = cipher.process(
-                    pkt.getBuffer(), aadLen, bufferedTagLen);
+                    pkt.getBuffer(), pkt.getOffset() + aadLen, bufferedTagLen);
 
                 pkt.setLength(aadLen + processLen);
             }
@@ -309,8 +310,8 @@ public class SrtcpCryptoContext
     private void processPacketAesF8(ByteArrayBuffer pkt, int index)
         throws GeneralSecurityException
     {
-        // 4 bytes of the iv are zero
-        // the first byte of the RTP header is not used.
+        // The IV is 4 bytes of zero, the E flag and the SRTCP index, and the first 8 bytes of the RTCP header
+        // (RFC 3711, section 4.1.2.3).
         ivStore[0] = 0;
         ivStore[1] = 0;
         ivStore[2] = 0;
@@ -328,10 +329,10 @@ public class SrtcpCryptoContext
         // The fixed header follows and fills the rest of the IV
         System.arraycopy(pkt.getBuffer(), pkt.getOffset(), ivStore, 8, 8);
 
-        // Encrypted part excludes fixed header (8 bytes), index (4 bytes), and
-        // authentication tag (variable according to policy)
+        // Encrypted part excludes fixed header (8 bytes). The index and the
+        // authentication tag are not part of the packet here.
         int payloadOffset = 8;
-        int payloadLength = pkt.getLength() - (4 + policy.getAuthTagLength());
+        int payloadLength = pkt.getLength() - payloadOffset;
 
         cipher.setIV(ivStore, Cipher.ENCRYPT_MODE);
         cipher.process(
@@ -438,6 +439,7 @@ public class SrtcpCryptoContext
         }
         else if (policy.getEncType() == SrtpPolicy.AESGCM_ENCRYPTION)
         {
+            pkt.shrink(4); /* Index is processed separately as part of AAD. */
             err = processPacketAesGcm(pkt, index, true, false);
             if (err != SrtpErrorStatus.OK)
             {
@@ -463,6 +465,8 @@ public class SrtcpCryptoContext
      * (RTPManager managed transportation) instead.
      *
      * @param pkt the RTP packet that is going to be sent out
+     * @return {@link SrtpErrorStatus#OK} if the packet was transformed. With any other status, and when an exception
+     * is thrown, the contents of the packet are not specified, and it must not be sent.
      */
     public synchronized SrtpErrorStatus transformPacket(ByteArrayBuffer pkt)
         throws GeneralSecurityException
@@ -487,7 +491,14 @@ public class SrtcpCryptoContext
              * non-encrypted RTCP authenticated with GCM, but that's not generally
              * a thing one wants to do anyway.
              */
-            processPacketAesGcm(pkt, sentIndex, false, true);
+            SrtpErrorStatus err = processPacketAesGcm(pkt, sentIndex, false, true);
+            if (err != SrtpErrorStatus.OK)
+            {
+                /* Return the failure instead of reporting OK. The cipher may have been given the IV of this index,
+                 * so the index is not used for another packet. */
+                nextSentIndex();
+                return err;
+            }
             pkt.append(rbStore, 4);
         }
 
@@ -507,10 +518,15 @@ public class SrtcpCryptoContext
             pkt.append(rbStore, 4);
             pkt.append(tagStore, policy.getAuthTagLength());
         }
-        sentIndex++;
-        sentIndex &= ~0x80000000;       // clear possible overflow
+        nextSentIndex();
 
         return SrtpErrorStatus.OK;
+    }
+
+    private void nextSentIndex()
+    {
+        sentIndex++;
+        sentIndex &= ~0x80000000;       // clear possible overflow
     }
 
     /**
